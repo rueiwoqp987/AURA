@@ -145,20 +145,6 @@ python main.py --target telegram --serial <ADB_SERIAL> --runs-dir <OUTPUT_ROOT> 
 
 AURA is profile-driven. Profiles live under `profiles/`.
 
-```mermaid
-flowchart LR
-    A[Load Profile] --> B[Snapshot Device State]
-    B --> C[Initialize Device]
-    C --> D[Run Method Engine]
-    D --> E[Phase Preflight]
-    E --> F[Policy Enforcement]
-    F --> G[App-Specific Acquisition]
-    G --> H[Register Artifacts]
-    H --> I[Normalize SQLite]
-    I --> J[Build Review Outputs]
-    J --> K[Package ZIP + Manifest]
-```
-
 ```text
 AURA run
   -> load target profile
