@@ -1,0 +1,57 @@
+{
+  "app_name": "WeChat",
+  "package_name": "com.tencent.mm",
+  "collection_methods": [
+    "S3"
+  ],
+  "chat_list_max_swipes": 20,
+  "chat_list_snapshot_interval_pages": 2,
+  "phase_plan": [
+    {
+      "name": "local-first",
+      "enabled": true,
+      "policy": {
+        "mode": "offline_airplane",
+        "require_airplane_enabled": true,
+        "require_dnd_enabled": true,
+        "enforce": true,
+        "enforce_dnd": true,
+        "collect": true
+      }
+    },
+    {
+      "name": "controlled-online",
+      "enabled": false,
+      "policy": {
+        "mode": "online_wifi",
+        "require_airplane_enabled": true,
+        "require_dnd_enabled": true,
+        "enforce": true,
+        "enforce_dnd": true,
+        "collect": true,
+        "disable_wifi_after": true,
+        "wifi_connect_wait_sec": 20,
+        "wifi_connected_stable_checks": 3,
+        "wifi_post_connect_stabilize_sec": 3
+      }
+    }
+  ],
+  "app_version": "8.0.66",
+  "profile_note": "PoC profile: UI-driven S3 collection path (WeChat v1 baseline)",
+  "ocr": {
+    "backend": "easyocr",
+    "tesseract_lang": "eng",
+    "languages": [
+      "en",
+      "ko"
+    ]
+  },
+  "chat_history_max_chats": 50,
+  "chat_history_max_pages": 300,
+  "chat_history_stagnant_stop_count": 2,
+  "chat_history_visual_stagnant_threshold": 0.985,
+  "chat_history_ocr_overlap_threshold": 0.72,
+  "sleep_default_sec": 1.0,
+  "sleep_min_sec": 1.0,
+  "sleep_force_one_sec": false
+}

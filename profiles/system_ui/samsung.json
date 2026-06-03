@@ -1,0 +1,138 @@
+{
+  "name": "samsung",
+  "description": "Samsung One UI system UI profile.",
+  "manufacturer_match": [
+    "samsung"
+  ],
+  "dnd": {
+    "strategy": "switch_with_hide_all",
+    "direct_intents": [
+      "am start -a android.settings.ZEN_MODE_SETTINGS",
+      "am start -a android.settings.ZEN_MODE_SETTINGS -f 0x10008000"
+    ],
+    "title_labels": [
+      "Do Not Disturb",
+      "Do not disturb"
+    ],
+    "main_switch_resource_ids": [
+      "android:id/switch_widget"
+    ],
+    "enable_button_resource_ids": [],
+    "disable_button_resource_ids": [],
+    "enable_button_labels": [],
+    "disable_button_labels": [],
+    "hide_notifications": {
+      "supported": true,
+      "row_labels": [
+        "Hide notifications"
+      ],
+      "hide_all_labels": [
+        "Hide all"
+      ],
+      "switch_text_resource_suffix": "switch_text",
+      "switch_widget_resource_suffix": "switch_widget",
+      "switch_background_resource_suffix": "switch_background"
+    }
+  },
+  "airplane": {
+    "strategy": "adb_settings",
+    "preferred_control": "adb_settings",
+    "global_setting": "airplane_mode_on",
+    "enabled_value": "1",
+    "disabled_value": "0",
+    "broadcast_intents": []
+  },
+  "network": {
+    "wifi": {
+      "strategy": "adb_shell_sequence",
+      "enable_commands": [
+        "svc wifi enable",
+        "cmd wifi set-wifi-enabled enabled",
+        "settings put global wifi_on 1"
+      ],
+      "disable_commands": [
+        "svc wifi disable",
+        "cmd wifi set-wifi-enabled disabled",
+        "settings put global wifi_on 0"
+      ]
+    }
+  },
+  "recent_apps": {
+    "strategy": "close_all_button",
+    "settle_sec": 0.5,
+    "close_all_labels": [
+      "Close all"
+    ]
+  },
+  "bluetooth": {
+    "strategy": "samsung_settings",
+    "direct_intents": [
+      "am start -a android.settings.BLUETOOTH_SETTINGS",
+      "am start -a android.settings.BLUETOOTH_SETTINGS -f 0x10008000"
+    ],
+    "settings_home_commands": [
+      "am start -a android.settings.SETTINGS",
+      "am start -a android.settings.SETTINGS -f 0x10008000"
+    ],
+    "settings_screen_labels": [
+      "Settings",
+      "Connections",
+      "Connection",
+      "Connected devices",
+      "Bluetooth"
+    ],
+    "connections_labels": [
+      "Connections",
+      "Connection",
+      "Connected devices"
+    ],
+    "connectivity_item_tokens": [
+      "Bluetooth",
+      "Wi",
+      "Airplane",
+      "Data usage",
+      "NFC"
+    ],
+    "bluetooth_labels": [
+      "Bluetooth"
+    ],
+    "switch_text_resource_ids": [
+      "com.android.settings:id/switch_text"
+    ],
+    "switch_widget_resource_ids": [
+      "com.android.settings:id/switch_widget"
+    ],
+    "switch_background_resource_ids": [
+      "com.android.settings:id/switch_background"
+    ],
+    "on_labels": [
+      "On"
+    ],
+    "off_labels": [
+      "Off"
+    ],
+    "scan_labels": [
+      "Scan",
+      "SCAN"
+    ],
+    "positive_dialog_resource_ids": [
+      "android:id/button1",
+      "com.android.settings:id/button1"
+    ],
+    "positive_dialog_texts": [
+      "OK",
+      "Pair",
+      "Connect",
+      "Allow",
+      "Yes",
+      "Confirm"
+    ],
+    "unpair_confirm_resource_ids": [
+      "android:id/button1",
+      "com.android.settings:id/button1"
+    ],
+    "unpair_texts": [
+      "Unpair"
+    ]
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "name": "generic",
+  "description": "Default Android/Google Pixel-like system UI profile.",
+  "manufacturer_match": [
+    "google",
+    "generic"
+  ],
+  "dnd": {
+    "strategy": "button_based",
+    "direct_intents": [
+      "am start -a android.settings.ZEN_MODE_SETTINGS",
+      "am start -a android.settings.ZEN_MODE_SETTINGS -f 0x10008000"
+    ],
+    "title_labels": [
+      "Do Not Disturb",
+      "Do not disturb"
+    ],
+    "enable_button_resource_ids": [
+      "com.android.settings:id/zen_mode_settings_turn_on_button"
+    ],
+    "disable_button_resource_ids": [
+      "com.android.settings:id/zen_mode_settings_turn_off_button"
+    ],
+    "enable_button_labels": [
+      "Turn on now"
+    ],
+    "disable_button_labels": [
+      "Turn off now"
+    ],
+    "hide_notifications": {
+      "supported": false
+    }
+  },
+  "airplane": {
+    "strategy": "adb_settings",
+    "preferred_control": "adb_settings",
+    "global_setting": "airplane_mode_on",
+    "enabled_value": "1",
+    "disabled_value": "0",
+    "broadcast_intents": []
+  },
+  "network": {
+    "wifi": {
+      "strategy": "adb_shell_sequence",
+      "enable_commands": [
+        "svc wifi enable",
+        "cmd wifi set-wifi-enabled enabled",
+        "settings put global wifi_on 1"
+      ],
+      "disable_commands": [
+        "svc wifi disable",
+        "cmd wifi set-wifi-enabled disabled",
+        "settings put global wifi_on 0"
+      ]
+    }
+  },
+  "recent_apps": {
+    "strategy": "swipe_to_clear_all_button",
+    "settle_sec": 0.5,
+    "clear_all_labels": [
+      "Clear all"
+    ],
+    "swipe_direction": "right",
+    "max_swipes": 8,
+    "swipe_settle_sec": 0.2
+  },
+  "bluetooth": {
+    "strategy": "generic_settings",
+    "preconnect_require_connected": false,
+    "allow_paired_fallback": true,
+    "allow_any_paired_fallback": false,
+    "allow_any_connected_fallback": false,
+    "share_sheet_expand_after_horizontal_scan": true,
+    "adapter_enable_commands": [
+      "cmd bluetooth_manager enable",
+      "cmd bluetooth_manager wait-for-state:STATE_ON"
+    ],
+    "adapter_disable_commands": [
+      "cmd bluetooth_manager disable",
+      "cmd bluetooth_manager wait-for-state:STATE_OFF"
+    ],
+    "direct_intents": [
+      "am start -a android.settings.BLUETOOTH_SETTINGS",
+      "am start -a android.settings.BLUETOOTH_SETTINGS -f 0x10008000"
+    ],
+    "pairing_direct_intents": [
+      "am start -a android.settings.BLUETOOTH_PAIRING_SETTINGS",
+      "am start -a android.settings.BLUETOOTH_PAIRING_SETTINGS -f 0x10008000"
+    ],
+    "connect_page_route": "pair_new_device",
+    "pair_new_device_labels": [
+      "Pair new device"
+    ],
+    "pairing_page_labels": [
+      "Available devices",
+      "Device name"
+    ],
+    "saved_devices_all_labels": [
+      "See all"
+    ],
+    "settings_home_commands": [
+      "am start -a android.settings.SETTINGS",
+      "am start -a android.settings.SETTINGS -f 0x10008000"
+    ],
+    "settings_screen_labels": [
+      "Settings",
+      "Connections",
+      "Connection",
+      "Connected devices",
+      "Bluetooth"
+    ],
+    "connections_labels": [
+      "Connections",
+      "Connection",
+      "Connected devices"
+    ],
+    "connectivity_item_tokens": [
+      "Bluetooth",
+      "Wi",
+      "Airplane",
+      "Data usage",
+      "NFC"
+    ],
+    "bluetooth_labels": [
+      "Bluetooth"
+    ],
+    "switch_text_resource_ids": [
+      "com.android.settings:id/switch_text"
+    ],
+    "switch_widget_resource_ids": [
+      "com.android.settings:id/switch_widget"
+    ],
+    "switch_background_resource_ids": [
+      "com.android.settings:id/switch_background"
+    ],
+    "on_labels": [
+      "On"
+    ],
+    "off_labels": [
+      "Off"
+    ],
+    "scan_labels": [
+      "Scan",
+      "SCAN"
+    ],
+    "positive_dialog_resource_ids": [
+      "android:id/button1",
+      "com.android.settings:id/button1"
+    ],
+    "positive_dialog_texts": [
+      "OK",
+      "Pair",
+      "Connect",
+      "Allow",
+      "Yes",
+      "Confirm"
+    ],
+    "device_settings_resource_ids": [
+      "com.android.settings:id/settings_button"
+    ],
+    "unpair_confirm_resource_ids": [
+      "android:id/button1",
+      "com.android.settings:id/button1"
+    ],
+    "unpair_texts": [
+      "Unpair",
+      "Forget"
+    ]
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "app_name": "Telegram",
+  "package_name": "org.telegram.messenger",
+  "collection_methods": [
+    "S1"
+  ],
+  "attachment_identity_policy_version": "telegram_attachment_identity_v1",
+  "attachment_identity_policy": {
+    "photo_no_caption": "observation_first",
+    "photo_with_caption": "logical_with_observation",
+    "video_no_caption": "observation_first",
+    "video_with_caption": "logical_with_observation",
+    "file": "logical_candidate_hash_final"
+  },
+  "telegram_attachment_snapshot_dirs": {
+    "File": [
+      "/sdcard/Download",
+      "/sdcard/Download/Telegram"
+    ],
+    "Photo": [
+      "/sdcard/Pictures/Telegram"
+    ],
+    "Video": [
+      "/sdcard/Movies/Telegram",
+      "/sdcard/Pictures/Telegram"
+    ]
+  },
+  "telegram_download_backup_dirs": [],
+  "telegram_cleanup_downloaded_device_files": true,
+  "telegram_attachment_progress_timeout_sec": 5.0,
+  "chat_snapshot_interval_pages": 2,
+  "contact_snapshot_interval_pages": 2,
+  "phase_plan": [
+    {
+      "name": "local-first",
+      "enabled": true,
+      "policy": {
+        "mode": "offline_airplane",
+        "require_airplane_enabled": true,
+        "require_dnd_enabled": true,
+        "enforce": true,
+        "enforce_dnd": true,
+        "collect": true
+      },
+      "collection_flags": {
+        "collect_accounts": false,
+        "switch_accounts": false,
+        "collect_user_profile": false,
+        "collect_contacts": false,
+        "collect_chatrooms": true
+      }
+    },
+    {
+      "name": "controlled-online",
+      "enabled": true,
+      "policy": {
+        "mode": "online_wifi",
+        "require_airplane_enabled": true,
+        "require_dnd_enabled": true,
+        "enforce": true,
+        "enforce_dnd": true,
+        "collect": true,
+        "disable_wifi_after": true,
+        "wifi_connect_wait_sec": 20,
+        "wifi_connected_stable_checks": 3,
+        "wifi_post_connect_stabilize_sec": 3,
+        "online_app_sync_settle_sec": 4.0
+      },
+      "collection_flags": {
+        "collect_accounts": false,
+        "switch_accounts": false,
+        "collect_user_profile": false,
+        "collect_contacts": false,
+        "collect_chatrooms": true
+      }
+    }
+  ],
+  "app_version": "12.7.3",
+  "profile_note": "PoC profile: UI-driven S1 collection path",
+  "sleep_default_sec": 0.5,
+  "sleep_min_sec": 0.05,
+  "sleep_force_one_sec": false,
+  "screen_state_timeout_sec": 2.0,
+  "screen_state_interval_sec": 0.2,
+  "list_changed_timeout_sec": 1.5,
+  "list_changed_interval_sec": 0.2,
+  "chat_history_scroll_distance_ratio": 0.35,
+  "chat_history_top_stable_rounds": 2
+}

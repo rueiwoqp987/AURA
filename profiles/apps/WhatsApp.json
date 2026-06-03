@@ -1,0 +1,49 @@
+{
+  "app_name": "WhatsApp",
+  "package_name": "com.whatsapp",
+  "collection_methods": [
+    "S2"
+  ],
+  "chat_list_max_swipes": 20,
+  "chat_list_snapshot_interval_pages": 2,
+  "chat_export_max_passes": 2,
+  "bluetooth_host_manual_mode": true,
+  "bluetooth_preconnect_enabled": true,
+  "bluetooth_prepare_host_before_export": true,
+  "bluetooth_unpair_after_collection": true,
+  "bluetooth_restore_initial_state_after_collection": true,
+  "phase_plan": [
+    {
+      "name": "local-first",
+      "enabled": true,
+      "policy": {
+        "mode": "offline_airplane",
+        "require_airplane_enabled": true,
+        "require_dnd_enabled": true,
+        "enforce": true,
+        "enforce_dnd": true,
+        "collect": true
+      }
+    },
+    {
+      "name": "controlled-online",
+      "enabled": false,
+      "policy": {
+        "mode": "online_wifi",
+        "require_airplane_enabled": true,
+        "require_dnd_enabled": true,
+        "enforce": true,
+        "enforce_dnd": true,
+        "collect": true,
+        "disable_wifi_after": true,
+        "wifi_connect_wait_sec": 20,
+        "wifi_connected_stable_checks": 3,
+        "wifi_post_connect_stabilize_sec": 3
+      }
+    }
+  ],
+  "app_version": "2.26.17.72",
+  "sleep_default_sec": 1.0,
+  "sleep_min_sec": 1.0,
+  "sleep_force_one_sec": false
+}

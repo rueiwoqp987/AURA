@@ -1,0 +1,164 @@
+{
+  "name": "huawei",
+  "description": "Huawei EMUI system UI profile.",
+  "manufacturer_match": [
+    "huawei"
+  ],
+  "dnd": {
+    "strategy": "switch_basic",
+    "direct_intents": [
+      "am start -a android.settings.ZEN_MODE_SETTINGS",
+      "am start -a android.settings.ZEN_MODE_SETTINGS -f 0x10008000"
+    ],
+    "settings_route": [
+      {
+        "exact_labels": [
+          "Sounds"
+        ],
+        "contains_tokens": [
+          "Sound"
+        ],
+        "max_swipes": 5
+      },
+      {
+        "exact_labels": [
+          "Do not disturb"
+        ],
+        "contains_tokens": [
+          "disturb"
+        ],
+        "regex_patterns": [
+          "(?i)^do\\s+not\\s+disturb$"
+        ],
+        "max_swipes": 4
+      }
+    ],
+    "title_labels": [
+      "Do Not Disturb",
+      "Do not disturb"
+    ],
+    "main_switch_resource_ids": [],
+    "main_switch_accept_any": true,
+    "main_switch_max_top_ratio": 0.3,
+    "enable_button_resource_ids": [],
+    "disable_button_resource_ids": [],
+    "enable_button_labels": [],
+    "disable_button_labels": [],
+    "hide_notifications": {
+      "supported": false
+    }
+  },
+  "airplane": {
+    "strategy": "adb_settings",
+    "preferred_control": "adb_settings",
+    "global_setting": "airplane_mode_on",
+    "enabled_value": "1",
+    "disabled_value": "0",
+    "broadcast_intents": []
+  },
+  "network": {
+    "wifi": {
+      "strategy": "adb_shell_sequence",
+      "enable_commands": [
+        "svc wifi enable",
+        "cmd wifi set-wifi-enabled enabled",
+        "settings put global wifi_on 1"
+      ],
+      "disable_commands": [
+        "svc wifi disable",
+        "cmd wifi set-wifi-enabled disabled",
+        "settings put global wifi_on 0"
+      ]
+    }
+  },
+  "recent_apps": {
+    "strategy": "tap_fixed_control",
+    "notes": "Icon-only EMUI recent-app clear control. Stable resource-id/content-desc are preferred; fixed ratio is a fallback.",
+    "settle_sec": 0.5,
+    "control_name": "clear_recent_icon",
+    "control_resource_ids": [
+      "com.huawei.android.launcher:id/clear_all_recents_image_button"
+    ],
+    "control_descriptions": [
+      "Close all recent apps"
+    ],
+    "control_x_ratio": 0.5,
+    "control_y_ratio": 0.84,
+    "post_tap_settle_sec": 0.5,
+    "press_home_after_tap": true
+  },
+  "bluetooth": {
+    "strategy": "generic_settings",
+    "preconnect_require_connected": false,
+    "allow_paired_fallback": true,
+    "allow_any_paired_fallback": false,
+    "allow_any_connected_fallback": false,
+    "direct_intents": [
+      "am start -a android.settings.BLUETOOTH_SETTINGS",
+      "am start -a android.settings.BLUETOOTH_SETTINGS -f 0x10008000"
+    ],
+    "settings_home_commands": [
+      "am start -a android.settings.SETTINGS",
+      "am start -a android.settings.SETTINGS -f 0x10008000"
+    ],
+    "settings_screen_labels": [
+      "Settings",
+      "Device connectivity",
+      "Bluetooth"
+    ],
+    "connections_labels": [
+      "Device connectivity"
+    ],
+    "connectivity_item_tokens": [
+      "Bluetooth",
+      "Wi",
+      "Mobile network"
+    ],
+    "bluetooth_labels": [
+      "Bluetooth"
+    ],
+    "switch_text_resource_ids": [
+      "com.android.settings:id/switch_text"
+    ],
+    "switch_widget_resource_ids": [
+      "com.android.settings:id/switch_widget"
+    ],
+    "switch_background_resource_ids": [
+      "com.android.settings:id/switch_background"
+    ],
+    "on_labels": [
+      "On"
+    ],
+    "off_labels": [
+      "Off"
+    ],
+    "scan_labels": [
+      "Scan",
+      "SCAN"
+    ],
+    "positive_dialog_resource_ids": [
+      "android:id/button1",
+      "com.android.settings:id/button1"
+    ],
+    "positive_dialog_texts": [
+      "OK",
+      "Pair",
+      "Connect",
+      "Allow",
+      "Yes",
+      "Confirm"
+    ],
+    "device_settings_resource_ids": [
+      "android:id/widget_frame",
+      "com.android.settings:id/konw_more"
+    ],
+    "unpair_confirm_resource_ids": [
+      "android:id/button1",
+      "com.android.settings:id/button1"
+    ],
+    "unpair_texts": [
+      "Unpair",
+      "UNPAIR"
+    ]
+  }
+}
