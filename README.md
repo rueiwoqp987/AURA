@@ -4,7 +4,7 @@
 
 **Auditable UI-based Retrieval and Acquisition**
 
-UI-driven mobile messenger acquisition with reviewable audit trails and acquisition-context linkage.
+UI-mediated mobile messenger acquisition with reviewable audit trails and acquisition-context linkage.
 
 ![Python](https://img.shields.io/badge/Python-3.13-1f6feb?style=for-the-badge)
 ![Host](https://img.shields.io/badge/Host-Windows-111827?style=for-the-badge)
@@ -26,17 +26,17 @@ AURA drives Android messenger apps through `uiautomator2`, captures UI-visible d
 | Start Here | Understand Outputs | Review Evidence | Scope |
 |---|---|---|---|
 | [Quick Start](#-quick-start) | [Output Bundle](#-output-bundle) | [Audit Review](#-audit-review) | [Scope Notes](#-scope-notes) |
-| [Target Matrix](#-target-matrix) | [Database Model](#-database-model) | [Reviewing A Run](#-reviewing-a-run) | [Current Limitations](#-current-limitations) |
+| [Configured Primitive Matrix](#-configured-primitive-matrix) | [Database Model](#-database-model) | [Reviewing A Run](#-reviewing-a-run) | [Current Limitations](#-current-limitations) |
 
 ## Snapshot
 
 | &#x1F9FE; Audit First | &#x1F4F1; Multi-App | &#x1F517; Evidence Linked | &#x1F9ED; Review Ready |
 |---|---|---|---|
-| `AURA_audit.log` records lifecycle, UI, host, wait, failure, and recovery events. | Telegram, WhatsApp, and WeChat use app-specific acquisition routes. | Artifacts are linked to phase, account, chat, message, observation, action, and screen. | SQLite DB, JSON review, HTML timeline, ZIP bundle, and integrity manifest are generated per run. |
+| `AURA_audit.log` records lifecycle, UI, host, wait, failure, and recovery events. | Telegram, WhatsApp, and WeChat use profile-selected acquisition primitives. | Artifacts are linked to phase, account, chat, message, observation, action, and screen. | SQLite DB, JSON review, HTML timeline, ZIP bundle, and integrity manifest are generated per run. |
 
 ## &#x2726; Why AURA Exists
 
-Mobile messengers increasingly resist direct database extraction or expose data only through app-controlled UI paths. AURA takes the opposite approach from hidden extraction: it makes the acquisition path visible, logged, and reviewable.
+Mobile messengers increasingly resist direct database extraction or expose data only through app-controlled UI paths. AURA therefore treats the UI-mediated acquisition path itself as visible, logged, and reviewable evidence.
 
 The core idea is simple:
 
@@ -51,13 +51,15 @@ AURA does not only ask "what file was collected?" It also records:
 - Whether the action succeeded, failed, timed out, recovered, or was skipped.
 - Which screenshots, UI trees, OCR sidecars, export files, and hashes support the result.
 
-## &#x25CE; Target Matrix
+## &#x25CE; Configured Primitive Matrix
 
-| Method | Target | Package | Acquisition Strategy |
+The acquisition primitives are general, complementary, and selected by profiles. The table below describes the current AURA instantiation, not a fixed one-to-one binding between a primitive and an app.
+
+| Target profile | Package | Configured primitive | Current acquisition route |
 |---|---|---|---|
-| `S1` | Telegram | `org.telegram.messenger` | UI hierarchy-driven chat/message/attachment acquisition with state predicates and device file snapshot diffs |
-| `S2` | WhatsApp | `com.whatsapp` | WhatsApp Export Chat through Android share sheet and Windows Bluetooth receiver, followed by export ZIP parsing |
-| `S3` | WeChat | `com.tencent.mm` | OCR-based chat list and chat history acquisition when reliable node-tree access is unavailable |
+| Telegram | `org.telegram.messenger` | `S1` | UI hierarchy-mediated chat/message/attachment acquisition with state predicates and device file snapshot diffs |
+| WhatsApp | `com.whatsapp` | `S2` | WhatsApp Export Chat through Android share sheet and Windows Bluetooth receiver, followed by export ZIP parsing |
+| WeChat | `com.tencent.mm` | `S3` | OCR-based chat list and chat history acquisition when reliable node-tree access is unavailable |
 
 ## &#x2728; What Stands Out
 
@@ -70,7 +72,7 @@ AURA does not only ask "what file was collected?" It also records:
 | &#x1F317; Phase-aware collection | Acquisition can run under `local-first` and `controlled-online` policies. |
 | &#x1F6E1; Bounded UI automation | Important UI actions use screen predicates, safe clicks, stable-poll checks, and bounded recovery. |
 | &#x1F510; Integrity metadata | Collected files are hashed and packaged with a manifest. |
-| &#x1F9E9; App-specific routes | Telegram, WhatsApp, and WeChat use different acquisition strategies while sharing one audit/storage model. |
+| &#x1F9E9; Profile-selected primitives | Telegram, WhatsApp, and WeChat currently use different configured primitives while sharing one audit/storage model. |
 
 ## &#x1F3AC; Demo Videos
 
@@ -78,9 +80,9 @@ Add demonstration videos here when available.
 
 | Scenario | Video | Notes |
 |---|---|---|
-| &#x1F4E1; Telegram S1 collection | TBD | Add a link or embedded demo showing phase transition, chat traversal, and attachment capture. |
-| &#x1F7E2; WhatsApp S2 Bluetooth export | TBD | Add a link or embedded demo showing pairing, Export Chat, receiver finish, and ZIP parsing. |
-| &#x1F4AC; WeChat S3 OCR collection | TBD | Add a link or embedded demo showing OCR chat list/history traversal. |
+| &#x1F4E1; Telegram profile with S1 | TBD | Add a link or embedded demo showing phase transition, chat traversal, and attachment capture. |
+| &#x1F7E2; WhatsApp profile with S2 | TBD | Add a link or embedded demo showing pairing, Export Chat, receiver finish, and ZIP parsing. |
+| &#x1F4AC; WeChat profile with S3 | TBD | Add a link or embedded demo showing OCR chat list/history traversal. |
 | &#x1F9ED; Audit review workflow | TBD | Add a link or embedded demo showing `AURA_audit_timeline.html` and `aura.db` review. |
 
 ## &#x26A1; Quick Start
@@ -109,13 +111,13 @@ adb devices
 ### 3. Run AURA
 
 ```powershell
-# Telegram S1
+# Telegram profile configured with S1
 python main.py --target telegram --serial <ADB_SERIAL>
 
-# WhatsApp S2
+# WhatsApp profile configured with S2
 python main.py --target whatsapp --serial <ADB_SERIAL>
 
-# WeChat S3
+# WeChat profile configured with S3
 python main.py --target wechat --serial <ADB_SERIAL>
 ```
 
@@ -159,9 +161,9 @@ AURA run
   -> initialize device state
   -> run orchestrator
       -> resolve app adapter
-      -> resolve method engine
+      -> resolve configured primitive engine
       -> create collector
-      -> execute configured method
+      -> execute configured primitive
           -> phase preflight
           -> phase policy enforcement
           -> app-specific acquisition
@@ -292,7 +294,7 @@ Convenience views:
 
 ## &#x1F4F1; App Strategies
 
-### &#x1F4E1; Telegram S1
+### &#x1F4E1; Telegram Profile Configured With S1
 
 Telegram uses UI hierarchy parsing and state-aware navigation.
 
@@ -318,7 +320,7 @@ Attachment identity is deliberately split:
 | `observation_id` | Run-local UI observation/action identity. |
 | `record_id` | Storage identity for the message row. |
 
-### &#x1F7E2; WhatsApp S2
+### &#x1F7E2; WhatsApp Profile Configured With S2
 
 WhatsApp uses the official Export Chat UI route and Windows Bluetooth receive.
 
@@ -339,7 +341,7 @@ Key behaviors:
 - Post-acquisition audit events summarize export materialization, archive registration, extraction, parser input, attachment validation, DB commit counts, and missing-attachment warnings.
 - Optional Bluetooth unpair and initial state restoration.
 
-### &#x1F4AC; WeChat S3
+### &#x1F4AC; WeChat Profile Configured With S3
 
 WeChat uses OCR because reliable node tree extraction is not available.
 
