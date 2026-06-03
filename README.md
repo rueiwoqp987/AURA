@@ -410,7 +410,7 @@ HTML timeline
 - WeChat remains OCR-dependent, so row extraction and message parsing are less deterministic than Telegram/WhatsApp.
 - WhatsApp export depends on Android share sheet behavior and Windows Bluetooth receiver state.
 - Android/OEM Settings screens vary across devices; DND, recent-apps, network, and Bluetooth flows may require new system UI profile entries on new models.
-- Time values are preserved, but AURA's primary emphasis is action/context/audit linkage rather than timestamp precision.
+- Time values are preserved, but AURA's primary emphasis is acquisition-context linkage rather than timestamp precision.
 - This is a research prototype, not a hardened commercial acquisition suite.
 
 ## &#x1F4C4; License
