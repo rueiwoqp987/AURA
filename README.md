@@ -4,7 +4,7 @@
 
 **Auditable UI-based Retrieval and Acquisition**
 
-UI-driven mobile messenger acquisition with reviewable audit trails and artifact--action--context linkage.
+UI-driven mobile messenger acquisition with reviewable audit trails and acquisition-context linkage.
 
 ![Python](https://img.shields.io/badge/Python-3.13-1f6feb?style=for-the-badge)
 ![Host](https://img.shields.io/badge/Host-Windows-111827?style=for-the-badge)
@@ -66,7 +66,7 @@ AURA does not only ask "what file was collected?" It also records:
 | &#x1F9FE; Audit by design | Every key action is logged to `AURA_audit.log` as JSONL and imported into `aura.db`. |
 | &#x1F9ED; Human-readable review | `AURA_audit_review.json` and `AURA_audit_timeline.html` summarize failures, recovered events, benign events, and artifact groups. |
 | &#x1F5C4; Normalized storage | Contacts, chatrooms, observations, messages, artifacts, audit events, links, and acquisition attempts are separated. |
-| &#x1F517; Artifact--action--context linkage | Artifacts are tied back to source actions, screens, phases, chats, messages, and observations. |
+| &#x1F517; Acquisition-context linkage | Artifacts are tied back to source actions, screens, phases, chats, messages, and observations. |
 | &#x1F317; Phase-aware collection | Acquisition can run under `local-first` and `controlled-online` policies. |
 | &#x1F6E1; Bounded UI automation | Important UI actions use screen predicates, safe clicks, stable-poll checks, and bounded recovery. |
 | &#x1F510; Integrity metadata | Collected files are hashed and packaged with a manifest. |
