@@ -25,7 +25,7 @@ AURA drives Android messenger apps through `uiautomator2`, captures UI-visible d
 
 | Start Here | Understand Outputs | Review Evidence | Scope |
 |---|---|---|---|
-| [Quick Start](#-quick-start) | [Output Bundle](#-output-bundle) | [Audit Review](#-audit-review) | [Scope Notes](#-scope-notes) |
+| [Quick Start](#-quick-start) | [Output Bundle](#-output-bundle) | [Audit Review](#-audit-review) | [Validation Environment](#-validation-environment) |
 | [Configured Primitive Matrix](#-configured-primitive-matrix) | [Database Model](#-database-model) | [Reviewing A Run](#-reviewing-a-run) | [Current Limitations](#-current-limitations) |
 
 ## Snapshot
@@ -398,6 +398,17 @@ HTML timeline
   -> SQLite message/artifact views
   -> raw JSONL only when exact sequence reconstruction is needed
 ```
+
+## &#x1F9EA; Validation Environment
+
+AURA has been exercised on representative Android devices to validate profile-driven app acquisition and OEM/system UI handling. These devices describe the current validation environment, not a fixed device requirement.
+
+| Device | Android | OEM / UI | System UI profile | Notes |
+|---|---:|---|---|---|
+| Samsung Galaxy S8 | 9 | One UI 1.0 | `samsung` | Legacy Samsung DND, Bluetooth, and Settings behavior. |
+| Samsung Galaxy S21 5G | 14 | One UI 6.1 | `samsung` | Modern Samsung DND, share sheet, Bluetooth, and recent-apps behavior. |
+| Google Pixel 5 | 14 | Pixel / AOSP-like UI | `generic` | Generic Android/Pixel DND, recent-apps, and share sheet behavior. |
+| Huawei P30 Lite | 9 | EMUI 9.1.0 | `huawei` | Huawei Settings, DND, recent-apps, and Bluetooth behavior. |
 
 ## &#x1F6A7; Scope Notes
 
