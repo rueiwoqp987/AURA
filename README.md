@@ -2,7 +2,7 @@
 
 # AURA
 
-**Auditable UI-mediated Retrieval and Acquisition**
+**Auditable UI-based Retrieval and Acquisition**
 
 UI-mediated mobile messenger acquisition with reviewable audit trails and acquisition-context linkage.
 
@@ -20,6 +20,9 @@ AURA drives Android messenger apps through `uiautomator2`, captures UI-visible d
 
 > **Research prototype**  
 > AURA is intended for authorized device analysis and controlled experiments. It is not designed to bypass access controls, hide automation, or acquire data without consent.
+
+> **Implementation details**  
+> For a deeper engineering handoff covering profiles, collectors, audit logging, storage schema, Bluetooth export handling, OCR boundaries, and validation scope, see [docs/IMPLEMENTATION_DETAILS.md](docs/IMPLEMENTATION_DETAILS.md).
 
 ## Quick Navigation
 
