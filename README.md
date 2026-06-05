@@ -2,7 +2,7 @@
 
 # AURA
 
-**Auditable UI-based Retrieval and Acquisition**
+**Auditable UI-mediated Retrieval and Acquisition**
 
 UI-mediated mobile messenger acquisition with reviewable audit trails and acquisition-context linkage.
 
