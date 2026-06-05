@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use AURA, please cite the associated paper and this software artifact."
+title: "AURA: Auditable UI-Mediated Android Evidence Acquisition"
+type: software
+authors:
+  - name: "AURA contributors"
+date-released: 2026-06-05
+abstract: "AURA is a UI-mediated Android evidence acquisition research prototype that records reviewable audit trails, normalized evidence records, and acquisition-context linkage for app-visible mobile messenger data collection."
