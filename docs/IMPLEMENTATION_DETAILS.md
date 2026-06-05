@@ -323,7 +323,9 @@ Review outputs are designed to make the raw audit log navigable:
 | Review section | Purpose |
 |---|---|
 | Phase Summary | Event counts, attention-required events, recovered non-success events, benign non-success events, and action chips. |
+| Artifact Trace Coverage | Highlights attachment trace coverage and attempt coverage, with lower-level linkage diagnostics folded under advanced details. |
 | Artifact Summary | Artifact groups by phase, kind, source action, and source screen. |
+| Artifact Acquisition Trace | Per-artifact context, source action, audit event, and acquisition attempt details for explaining how a file was obtained or why a related attempt failed. |
 | Key Events | Run, primitive, package, and artifact milestones. |
 | Attention Required | Unresolved non-success events. |
 | Recovered Non-Success | Transient failures that were later recovered by a success marker. |
@@ -331,6 +333,10 @@ Review outputs are designed to make the raw audit log navigable:
 | Raw JSON Details | Collapsible JSON payloads for exact sequence reconstruction. |
 
 The HTML report includes a collapsible interpretation guide explaining how to read each section.
+
+A public, anonymized example of the generated HTML review report is available at [`docs/examples/AURA_audit_timeline_sample.html`](examples/AURA_audit_timeline_sample.html).
+
+Coverage values are intentionally separated by linkage type. Attachment attempt coverage is the primary reviewer-facing measure for content-bearing attachments. Advanced diagnostics such as "artifacts linked to acquisition attempts" can be lower because screenshots, UI trees, OCR sidecars, and other support files are traceable evidence artifacts but are not acquisition targets with attempt records.
 
 ## 10. SQLite Database Model
 

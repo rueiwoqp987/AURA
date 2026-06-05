@@ -98,6 +98,58 @@ def _parse_artifact_annotations(artifacts) -> dict:
     return parsed
 
 
+def _parse_kv_artifacts(event: dict) -> dict:
+    return _parse_artifact_annotations(_event_artifacts(event))
+
+
+def _derive_run_metadata(events: list[dict], run_id: str) -> dict:
+    metadata = {
+        "run_id": run_id,
+        "target": "",
+        "app_package": "",
+        "app_profile": "",
+        "configured_primitives": [],
+        "phase_labels": [],
+        "aura_version": "",
+    }
+    phase_labels = []
+    primitives = []
+
+    for event in events:
+        action = event.get("action")
+        artifacts = _parse_kv_artifacts(event)
+
+        if not metadata["app_package"] and event.get("app"):
+            metadata["app_package"] = event.get("app")
+
+        if action == "run_start":
+            metadata["target"] = artifacts.get("target") or event.get("selector") or metadata["target"]
+            metadata["app_profile"] = artifacts.get("profile") or metadata["app_profile"]
+            metadata["aura_version"] = artifacts.get("aura_version") or metadata["aura_version"]
+            methods = artifacts.get("methods") or ""
+            if methods:
+                primitives.extend([item.strip().upper() for item in methods.split(",") if item.strip()])
+
+        if action == "orchestrator_start":
+            metadata["target"] = artifacts.get("target") or event.get("selector") or metadata["target"]
+            methods = artifacts.get("methods") or ""
+            if methods:
+                primitives.extend([item.strip().upper() for item in methods.split(",") if item.strip()])
+
+        if action in {"method_start", "method_end"}:
+            method = artifacts.get("method") or event.get("selector")
+            if method:
+                primitives.append(str(method).strip().upper())
+
+        phase = event.get("phase")
+        if phase and phase not in {"", "unscoped", "orchestration", "setup", "package", "cleanup"}:
+            phase_labels.append(str(phase))
+
+    metadata["configured_primitives"] = sorted(set(primitives))
+    metadata["phase_labels"] = sorted(set(phase_labels))
+    return metadata
+
+
 def _backfill_artifact_action_context_links(cur, records: list[dict], fallback_run_id: str) -> None:
     for record in records:
         if record.get("action") != "artifact_context_registered":
@@ -258,6 +310,232 @@ def _event_artifacts(event: dict) -> list:
         return []
 
 
+def _json_list(value) -> list:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    if isinstance(value, tuple):
+        return list(value)
+    if not isinstance(value, str):
+        return [value]
+    text = value.strip()
+    if not text:
+        return []
+    try:
+        parsed = json.loads(text)
+    except Exception:
+        return [text]
+    if isinstance(parsed, list):
+        return parsed
+    if parsed in (None, ""):
+        return []
+    return [parsed]
+
+
+def _fetch_artifact_acquisition_traces(db_path: Path, limit: int | None = None) -> list[dict]:
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        cur = conn.cursor()
+        query = """
+            SELECT
+                a.artifact_id,
+                a.run_id,
+                a.artifact_path,
+                a.artifact_kind,
+                a.file_name,
+                a.display_filename,
+                a.sha256,
+                a.size_bytes,
+                a.content_group_id,
+                a.phase,
+                a.account,
+                a.observed_chat_id,
+                a.record_id,
+                a.message_id,
+                a.observation_id,
+                a.source_action,
+                a.source_screen,
+                l.audit_seq,
+                l.source_action AS link_source_action,
+                l.source_screen AS link_source_screen
+            FROM artifacts a
+            LEFT JOIN artifact_action_context_links l
+                ON l.run_id = a.run_id
+                AND l.artifact_id = a.artifact_id
+            ORDER BY
+                COALESCE(l.audit_seq, 999999999),
+                a.phase,
+                a.artifact_kind,
+                a.artifact_path
+            """
+        params = ()
+        if limit is not None:
+            query += " LIMIT ?"
+            params = (limit,)
+        cur.execute(query, params)
+        artifact_rows = [dict(row) for row in cur.fetchall()]
+        if not artifact_rows:
+            return []
+
+        cur.execute(
+            """
+            SELECT run_id, attempt_id, phase, account, observed_chat_id, record_id, message_id,
+                   observation_id, method, primitive, route_id, target_type, target_label,
+                   message_type, display_filename, status, failure_reason, error, ui_reached,
+                   artifact_materialized, started_audit_seq, ended_audit_seq, duration_sec,
+                   audit_operation_id, artifact_ids, artifact_paths, sha256_list,
+                   screenshot_artifact_id, uitree_artifact_id, screenshot_path, uitree_path
+            FROM acquisition_attempts
+            ORDER BY COALESCE(ended_ts, started_ts, created_ts)
+            """
+        )
+        attempts = [dict(row) for row in cur.fetchall()]
+
+        seqs = sorted({row.get("audit_seq") for row in artifact_rows if row.get("audit_seq") is not None})
+        events_by_seq: dict[int, dict] = {}
+        if seqs:
+            placeholders = ",".join("?" for _ in seqs)
+            cur.execute(
+                f"""
+                SELECT run_id, seq, ts, phase, account, chat_id, action, selector, result, error, artifacts_json
+                FROM audit_events
+                WHERE seq IN ({placeholders})
+                ORDER BY seq
+                """,
+                seqs,
+            )
+            events_by_seq = {row["seq"]: dict(row) for row in cur.fetchall()}
+
+        attempts_by_artifact: dict[str, list[dict]] = defaultdict(list)
+        for attempt in attempts:
+            ids = {str(item) for item in _json_list(attempt.get("artifact_ids")) if item}
+            paths = {str(item) for item in _json_list(attempt.get("artifact_paths")) if item}
+            sha_values = {str(item) for item in _json_list(attempt.get("sha256_list")) if item}
+            for row in artifact_rows:
+                artifact_id = row.get("artifact_id")
+                artifact_path = row.get("artifact_path")
+                sha256 = row.get("sha256")
+                if (
+                    (artifact_id and artifact_id in ids)
+                    or (artifact_path and artifact_path in paths)
+                    or (sha256 and sha256 in sha_values)
+                ):
+                    attempts_by_artifact[artifact_id].append(attempt)
+
+        traces = []
+        for row in artifact_rows:
+            audit_event = events_by_seq.get(row.get("audit_seq"))
+            trace_attempts = []
+            for attempt in attempts_by_artifact.get(row.get("artifact_id"), []):
+                trace_attempts.append(
+                    {
+                        "attempt_id": attempt.get("attempt_id"),
+                        "status": attempt.get("status"),
+                        "failure_reason": attempt.get("failure_reason"),
+                        "error": attempt.get("error"),
+                        "primitive": attempt.get("primitive"),
+                        "method": attempt.get("method"),
+                        "route_id": attempt.get("route_id"),
+                        "target_type": attempt.get("target_type"),
+                        "target_label": attempt.get("target_label"),
+                        "display_filename": attempt.get("display_filename"),
+                        "ui_reached": attempt.get("ui_reached"),
+                        "artifact_materialized": attempt.get("artifact_materialized"),
+                        "started_audit_seq": attempt.get("started_audit_seq"),
+                        "ended_audit_seq": attempt.get("ended_audit_seq"),
+                        "duration_sec": attempt.get("duration_sec"),
+                        "audit_operation_id": attempt.get("audit_operation_id"),
+                        "screenshot_artifact_id": attempt.get("screenshot_artifact_id"),
+                        "uitree_artifact_id": attempt.get("uitree_artifact_id"),
+                        "screenshot_path": attempt.get("screenshot_path"),
+                        "uitree_path": attempt.get("uitree_path"),
+                    }
+                )
+            traces.append(
+                {
+                    "artifact": {
+                        "artifact_id": row.get("artifact_id"),
+                        "artifact_path": row.get("artifact_path"),
+                        "artifact_kind": row.get("artifact_kind"),
+                        "file_name": row.get("file_name"),
+                        "display_filename": row.get("display_filename"),
+                        "sha256": row.get("sha256"),
+                        "size_bytes": row.get("size_bytes"),
+                        "content_group_id": row.get("content_group_id"),
+                        "source_action": row.get("source_action") or row.get("link_source_action"),
+                        "source_screen": row.get("source_screen") or row.get("link_source_screen"),
+                    },
+                    "context": {
+                        "run_id": row.get("run_id"),
+                        "phase": row.get("phase"),
+                        "account": row.get("account"),
+                        "chat_id": row.get("observed_chat_id"),
+                        "record_id": row.get("record_id"),
+                        "message_id": row.get("message_id"),
+                        "observation_id": row.get("observation_id"),
+                    },
+                    "audit_events": [
+                        {
+                            "seq": audit_event.get("seq"),
+                            "phase": audit_event.get("phase"),
+                            "action": audit_event.get("action"),
+                            "selector": audit_event.get("selector"),
+                            "result": audit_event.get("result"),
+                            "error": audit_event.get("error"),
+                            "artifacts": _event_artifacts(audit_event),
+                        }
+                    ]
+                    if audit_event
+                    else [],
+                    "attempts": trace_attempts,
+                }
+            )
+        return traces
+    finally:
+        conn.close()
+
+
+def _is_attachment_trace(trace: dict) -> bool:
+    kind = str((trace.get("artifact") or {}).get("artifact_kind") or "").lower()
+    return kind.startswith("attachment_") or "attachment" in kind or "export_media" in kind
+
+
+def _summarize_artifact_trace_coverage(traces: list[dict]) -> dict:
+    total = len(traces)
+    attachment_total = sum(1 for trace in traces if _is_attachment_trace(trace))
+    with_audit = sum(1 for trace in traces if trace.get("audit_events"))
+    with_attempt = sum(1 for trace in traces if trace.get("attempts"))
+    attachment_with_audit = sum(1 for trace in traces if _is_attachment_trace(trace) and trace.get("audit_events"))
+    attachment_with_attempt = sum(1 for trace in traces if _is_attachment_trace(trace) and trace.get("attempts"))
+    attempt_statuses = Counter()
+    for trace in traces:
+        for attempt in trace.get("attempts") or []:
+            attempt_statuses[str(attempt.get("status") or "unknown")] += 1
+
+    def pct(part: int, whole: int) -> float:
+        return round((part / whole) * 100, 1) if whole else 0.0
+
+    return {
+        "total_artifacts": total,
+        "artifact_trace_rows": total,
+        "artifact_trace_coverage_pct": pct(total, total),
+        "attachment_artifacts": attachment_total,
+        "attachment_trace_rows": attachment_total,
+        "attachment_trace_coverage_pct": pct(attachment_total, attachment_total),
+        "artifacts_with_audit_event": with_audit,
+        "artifact_audit_event_linkage_pct": pct(with_audit, total),
+        "artifacts_with_acquisition_attempt": with_attempt,
+        "artifact_attempt_linkage_pct": pct(with_attempt, total),
+        "attachments_with_audit_event": attachment_with_audit,
+        "attachment_audit_event_linkage_pct": pct(attachment_with_audit, attachment_total),
+        "attachments_with_acquisition_attempt": attachment_with_attempt,
+        "attachment_attempt_linkage_pct": pct(attachment_with_attempt, attachment_total),
+        "attempt_statuses": dict(sorted(attempt_statuses.items())),
+    }
+
+
 def _is_success_result(result: str | None) -> bool:
     return (result or "") in ("", "success", "confirmed", "stable", "changed")
 
@@ -328,7 +606,10 @@ def build_audit_review_outputs(db_path, review_json_path, review_html_path) -> d
     key_events = []
     artifact_groups = Counter()
     artifact_samples = {}
+    artifact_acquisition_traces = _fetch_artifact_acquisition_traces(db_file)
+    artifact_trace_coverage = _summarize_artifact_trace_coverage(artifact_acquisition_traces)
     recovery_phases_after = _build_recovery_phases_after(events)
+    run_metadata = _derive_run_metadata(events, run_id)
 
     for index, event in enumerate(events):
         phase = event.get("phase") or "unscoped"
@@ -407,6 +688,7 @@ def build_audit_review_outputs(db_path, review_json_path, review_html_path) -> d
         "review_schema_version": "v1",
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "run_id": run_id,
+        "run_metadata": run_metadata,
         "event_count": len(events),
         "actions": dict(sorted(actions.items())),
         "phases": {
@@ -437,6 +719,8 @@ def build_audit_review_outputs(db_path, review_json_path, review_html_path) -> d
                 key=lambda item: (item[0][0], item[0][1], item[0][2], item[0][3]),
             )
         ],
+        "artifact_acquisition_traces": artifact_acquisition_traces,
+        "artifact_trace_coverage": artifact_trace_coverage,
     }
 
     json_path.parent.mkdir(parents=True, exist_ok=True)
@@ -477,6 +761,78 @@ def _render_review_html(review: dict) -> str:
             rendered += f" <span class='muted'>+{extra} more</span>"
         return rendered
 
+    def trace_event_labels(trace: dict) -> list[str]:
+        labels = []
+        for event in trace.get("audit_events", []) or []:
+            labels.append(f"seq={event.get('seq')} {event.get('action')}:{event.get('result')}")
+        return labels
+
+    def trace_attempt_labels(trace: dict) -> list[str]:
+        labels = []
+        for attempt in trace.get("attempts", []) or []:
+            suffix = attempt.get("failure_reason") or attempt.get("route_id") or attempt.get("attempt_id")
+            labels.append(f"{attempt.get('status')}:{suffix}")
+        return labels
+
+    coverage = review.get("artifact_trace_coverage") or {}
+    metadata = review.get("run_metadata") or {}
+    artifact_total = int(coverage.get("total_artifacts") or 0)
+    artifact_traced = int(coverage.get("artifact_trace_rows") or 0)
+    attachment_total = int(coverage.get("attachment_artifacts") or 0)
+    attachment_traced = int(coverage.get("attachment_trace_rows") or 0)
+    artifact_audit_linked = int(coverage.get("artifacts_with_audit_event") or 0)
+    artifact_attempt_linked = int(coverage.get("artifacts_with_acquisition_attempt") or 0)
+    attachment_attempt_linked = int(coverage.get("attachments_with_acquisition_attempt") or 0)
+    coverage_metric = (
+        f"<span class=\"metric\">Attachments traced: {esc(attachment_traced)}/{esc(attachment_total)} "
+        f"({esc(coverage.get('attachment_trace_coverage_pct'))}%)</span>"
+        f"<span class=\"metric\">Attachment attempt coverage: {esc(attachment_attempt_linked)}/{esc(attachment_total)} "
+        f"({esc(coverage.get('attachment_attempt_linkage_pct'))}%)</span>"
+        f"<span class=\"metric\">Artifacts traced: {esc(artifact_traced)}/{esc(artifact_total)} "
+        f"({esc(coverage.get('artifact_trace_coverage_pct'))}%)</span>"
+    )
+    primitive_label = ", ".join(metadata.get("configured_primitives") or []) or "unknown"
+    phase_label = ", ".join(metadata.get("phase_labels") or []) or "unknown"
+    target_summary_rows = "\n".join(
+        [
+            f"<tr><th>Target app</th><td>{esc(metadata.get('target') or 'unknown')}</td><th>Package</th><td><code>{esc(metadata.get('app_package') or 'unknown')}</code></td></tr>",
+            f"<tr><th>App profile</th><td><code>{esc(metadata.get('app_profile') or 'unknown')}</code></td><th>Configured primitive</th><td>{esc(primitive_label)}</td></tr>",
+            f"<tr><th>Run ID</th><td><code>{esc(metadata.get('run_id') or review.get('run_id'))}</code></td><th>Phases observed</th><td>{esc(phase_label)}</td></tr>",
+            f"<tr><th>AURA version</th><td>{esc(metadata.get('aura_version') or 'unknown')}</td><th>Audit events</th><td>{esc(review.get('event_count'))}</td></tr>",
+        ]
+    )
+    coverage_rows = "\n".join(
+        [
+            "<tr><td>All artifacts represented in trace</td>"
+            f"<td>{esc(artifact_traced)} / {esc(artifact_total)}</td>"
+            f"<td>{esc(coverage.get('artifact_trace_coverage_pct'))}%</td></tr>",
+            "<tr><td>Attachment artifacts represented in trace</td>"
+            f"<td>{esc(attachment_traced)} / {esc(attachment_total)}</td>"
+            f"<td>{esc(coverage.get('attachment_trace_coverage_pct'))}%</td></tr>",
+            "<tr><td>Attachments linked to acquisition attempts</td>"
+            f"<td>{esc(attachment_attempt_linked)} / {esc(attachment_total)}</td>"
+            f"<td>{esc(coverage.get('attachment_attempt_linkage_pct'))}%</td></tr>",
+            "<tr><td>Attempt statuses</td>"
+            f"<td colspan='2'>{action_chips(coverage.get('attempt_statuses') or {})}</td></tr>",
+        ]
+    )
+    advanced_coverage_rows = "\n".join(
+        [
+            "<tr><td>Artifacts linked to direct audit event</td>"
+            f"<td>{esc(artifact_audit_linked)} / {esc(artifact_total)}</td>"
+            f"<td>{esc(coverage.get('artifact_audit_event_linkage_pct'))}%</td>"
+            "<td>Artifacts with a directly associated audit event. A value below 100% can be expected when a row is represented through derived context rather than a single source event.</td></tr>",
+            "<tr><td>Artifacts linked to acquisition attempts</td>"
+            f"<td>{esc(artifact_attempt_linked)} / {esc(artifact_total)}</td>"
+            f"<td>{esc(coverage.get('artifact_attempt_linkage_pct'))}%</td>"
+            "<td>Attempt records are mainly used for content-bearing acquisition targets such as attachments. Supporting artifacts such as screenshots and UI trees may not have an attempt concept, so this diagnostic is not expected to be 100%.</td></tr>",
+            "<tr><td>Attachments linked to direct audit event</td>"
+            f"<td>{esc(coverage.get('attachments_with_audit_event'))} / {esc(attachment_total)}</td>"
+            f"<td>{esc(coverage.get('attachment_audit_event_linkage_pct'))}%</td>"
+            "<td>Attachment files with a directly associated audit event. Missing or derived attachment relationships can lower this value while still remaining traceable through acquisition attempts.</td></tr>",
+        ]
+    )
+
     phase_rows = "\n".join(
         "<tr>"
         f"<td>{esc(phase)}</td>"
@@ -510,6 +866,49 @@ def _render_review_html(review: dict) -> str:
         "</tr>"
         for item in review.get("artifact_summary", [])
     ) or "<tr><td colspan='6'>No artifact context records found.</td></tr>"
+    review_traces = []
+    supporting_traces = []
+    for trace in review.get("artifact_acquisition_traces", []):
+        artifact = trace.get("artifact") or {}
+        kind = str(artifact.get("artifact_kind") or "").lower()
+        attempts = trace.get("attempts") or []
+        has_non_success_attempt = any((attempt.get("status") or "") != "success" for attempt in attempts)
+        is_key_artifact = (
+            _is_attachment_trace(trace)
+            or has_non_success_attempt
+            or "export_archive" in kind
+            or "export_text" in kind
+            or kind in {"whatsapp_export_archive", "whatsapp_export_text"}
+        )
+        if is_key_artifact:
+            review_traces.append(trace)
+        else:
+            supporting_traces.append(trace)
+
+    trace_rows = "\n".join(
+        "<tr>"
+        f"<td>{esc((trace.get('artifact') or {}).get('artifact_kind'))}</td>"
+        f"<td><code>{esc((trace.get('artifact') or {}).get('artifact_path'))}</code></td>"
+        f"<td>{esc((trace.get('context') or {}).get('phase'))}</td>"
+        f"<td>{esc((trace.get('context') or {}).get('chat_id'))}</td>"
+        f"<td>{esc((trace.get('artifact') or {}).get('source_action'))}</td>"
+        f"<td>{artifact_preview(trace_event_labels(trace))}</td>"
+        f"<td>{artifact_preview(trace_attempt_labels(trace))}</td>"
+        f"<td>{json_details('Raw acquisition trace JSON', trace)}</td>"
+        "</tr>"
+        for trace in review_traces
+    ) or "<tr><td colspan='8'>No key artifact acquisition traces found.</td></tr>"
+    supporting_summary = Counter(str((trace.get("artifact") or {}).get("artifact_kind") or "unknown") for trace in supporting_traces)
+    supporting_trace_block = (
+        "<details class='advanced-block'><summary>Supporting artifact traces "
+        f"({esc(len(supporting_traces))})</summary>"
+        "<p class='muted'>Screenshots, UI trees, timeout captures, and other supporting evidence are traceable but collapsed by default to keep the review focused on collected content and failed/missing attempts.</p>"
+        f"<div>{action_chips(dict(supporting_summary))}</div>"
+        "<p class='muted'>Open the review JSON for per-supporting-artifact details.</p>"
+        "</details>"
+        if supporting_traces
+        else "<p class='muted'>No supporting artifact traces were separated.</p>"
+    )
     failure_rows = "\n".join(
         "<tr>"
         f"<td>{esc(event.get('seq'))}</td>"
@@ -553,7 +952,11 @@ def _render_review_html(review: dict) -> str:
       </section>
       <section class="guide-card">
         <h3>Artifact Summary</h3>
-        <p>Use kind, source action, and source screen to understand how each evidence group was produced. This is the primary artifact--action--context linkage overview.</p>
+        <p>Use kind, source action, and source screen to understand how each evidence group was produced. This is the acquisition-context linkage overview.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Artifact Acquisition Trace</h3>
+        <p>Use this section to inspect collected attachments, export artifacts, and failed or missing acquisition attempts. Supporting screenshots and XML are collapsed by default.</p>
       </section>
       <section class="guide-card">
         <h3>Key Events</h3>
@@ -606,6 +1009,7 @@ def _render_review_html(review: dict) -> str:
     .guide-card.wide {{ grid-column: 1 / -1; }}
     .guide-card h3 {{ margin: 0 0 8px; font-family: Bahnschrift, Segoe UI, sans-serif; color: #24382f; }}
     .guide-card p {{ margin: 0; line-height: 1.45; color: #415045; }}
+    .advanced-block {{ margin: 10px 0 28px; padding: 12px 14px; border: 1px dashed #bdc8b6; border-radius: 12px; background: #fffdf8; }}
     code {{ background: #efe6d6; padding: 1px 4px; border-radius: 4px; }}
     details {{ margin-top: 8px; }}
     summary {{ cursor: pointer; color: #385444; font-family: Bahnschrift, Segoe UI, sans-serif; font-size: 12px; }}
@@ -615,12 +1019,20 @@ def _render_review_html(review: dict) -> str:
 </head>
 <body>
   <h1>AURA Review Report</h1>
-  <p><span class="metric">Run: <code>{esc(review.get('run_id'))}</code></span><span class="metric">Events: {esc(review.get('event_count'))}</span></p>
+  <p><span class="metric">Run: <code>{esc(review.get('run_id'))}</code></span><span class="metric">Events: {esc(review.get('event_count'))}</span>{coverage_metric}</p>
 {review_guide}
+  <h2>Target Summary</h2>
+  <table><tbody>{target_summary_rows}</tbody></table>
+  <h2>Artifact Trace Coverage</h2>
+  <table><thead><tr><th>Metric</th><th>Count</th><th>Coverage</th></tr></thead><tbody>{coverage_rows}</tbody></table>
+  <details class="advanced-block"><summary>Advanced linkage diagnostics</summary><p class="muted">These diagnostics separate direct event linkage from acquisition-attempt linkage. Lower values are not necessarily defects: many supporting artifacts are evidence for an action, but are not themselves acquisition targets with attempt records.</p><table><thead><tr><th>Diagnostic</th><th>Count</th><th>Coverage</th><th>How to interpret</th></tr></thead><tbody>{advanced_coverage_rows}</tbody></table></details>
   <h2>Phase Summary</h2>
   <table><thead><tr><th>Phase</th><th>Events</th><th>Attention Required</th><th>Recovered Non-Success</th><th>Benign Non-Success</th><th>Actions</th></tr></thead><tbody>{phase_rows}</tbody></table>
   <h2>Artifact Summary</h2>
   <table><thead><tr><th>Phase</th><th>Kind</th><th>Source Action</th><th>Source Screen</th><th>Count</th><th>Sample</th></tr></thead><tbody>{artifact_rows}</tbody></table>
+  <h2>Artifact Acquisition Trace</h2>
+  <table><thead><tr><th>Kind</th><th>Path</th><th>Phase</th><th>Chat</th><th>Source Action</th><th>Audit Events</th><th>Attempts</th><th>Details</th></tr></thead><tbody>{trace_rows}</tbody></table>
+  {supporting_trace_block}
   <h2>Key Events</h2>
   <table><thead><tr><th>Seq</th><th>Phase</th><th>Action</th><th>Selector</th><th>Result</th><th>Artifacts</th></tr></thead><tbody>{event_rows}</tbody></table>
   <h2>Attention Required</h2>

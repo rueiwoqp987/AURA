@@ -1,0 +1,2464 @@
+<!--
+  Anonymized AURA sample audit review report.
+  This file is derived from a representative local test run and scrubbed for public documentation.
+  It contains placeholder paths, hosts, chats, hashes, and filenames.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AURA Review Report - AURA_SAMPLE_RUN</title>
+  <style>
+    body { font-family: Cambria, Georgia, serif; margin: 32px; color: #17201a; background: #f8f4ec; }
+    h1, h2 { font-family: Bahnschrift, Segoe UI, sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 16px 0 28px; background: #fffdf8; }
+    th, td { border: 1px solid #d8cdbb; padding: 8px 10px; vertical-align: top; }
+    th { background: #24382f; color: #fff; text-align: left; }
+    .metric { display: inline-block; padding: 10px 14px; background: #e5dbc8; margin-right: 8px; border-radius: 8px; }
+    .chip { display: inline-block; margin: 2px 4px 2px 0; padding: 3px 7px; border-radius: 999px; background: #e9efe7; border: 1px solid #cbd8c8; font-family: Bahnschrift, Segoe UI, sans-serif; font-size: 12px; }
+    .count { font-weight: 700; color: #284d38; }
+    .muted { color: #69736c; }
+    .review-guide { margin: 18px 0 24px; border: 1px solid #bdc8b6; border-radius: 16px; background: linear-gradient(135deg, #fffdf8 0%, #edf3e8 100%); box-shadow: 0 12px 28px rgba(36, 56, 47, 0.10); overflow: hidden; }
+    .review-guide > summary { list-style: none; padding: 18px 22px; background: #24382f; color: #f7f0e3; display: flex; align-items: baseline; gap: 12px; }
+    .review-guide > summary::-webkit-details-marker { display: none; }
+    .review-guide > summary::after { content: "expand"; margin-left: auto; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #cbd8c8; }
+    .review-guide[open] > summary::after { content: "collapse"; }
+    .guide-title { font-family: Bahnschrift, Segoe UI, sans-serif; font-size: 18px; font-weight: 700; }
+    .guide-subtitle { color: #d8cdbb; font-size: 13px; }
+    .guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; padding: 16px; }
+    .guide-card { border: 1px solid #d8cdbb; border-radius: 12px; background: rgba(255, 253, 248, 0.92); padding: 14px; }
+    .guide-card.wide { grid-column: 1 / -1; }
+    .guide-card h3 { margin: 0 0 8px; font-family: Bahnschrift, Segoe UI, sans-serif; color: #24382f; }
+    .guide-card p { margin: 0; line-height: 1.45; color: #415045; }
+    .advanced-block { margin: 10px 0 28px; padding: 12px 14px; border: 1px dashed #bdc8b6; border-radius: 12px; background: #fffdf8; }
+    code { background: #efe6d6; padding: 1px 4px; border-radius: 4px; }
+    details { margin-top: 8px; }
+    summary { cursor: pointer; color: #385444; font-family: Bahnschrift, Segoe UI, sans-serif; font-size: 12px; }
+    pre { max-height: 260px; overflow: auto; background: #18221d; color: #f4f0e8; padding: 12px; border-radius: 8px; }
+    pre code { background: transparent; padding: 0; color: inherit; }
+  </style>
+</head>
+<body>
+  <h1>AURA Review Report</h1>
+  <p><span class="metric">Run: <code>AURA_SAMPLE_RUN</code></span><span class="metric">Events: 313</span><span class="metric">Attachments traced: 13/13 (100.0%)</span><span class="metric">Attachment attempt coverage: 13/13 (100.0%)</span><span class="metric">Artifacts traced: 33/33 (100.0%)</span></p>
+
+  <details class="review-guide">
+    <summary><span class="guide-title">AURA Review Guide</span><span class="guide-subtitle">How to read this report</span></summary>
+    <div class="guide-grid">
+      <section class="guide-card">
+        <h3>Phase Summary</h3>
+        <p>Start here to compare phases. <strong>Attention Required</strong> means unresolved non-success, <strong>Recovered</strong> means a later success marker closed the issue, and <strong>Benign</strong> means expected optional waits or already-open states.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Artifact Summary</h3>
+        <p>Use kind, source action, and source screen to understand how each evidence group was produced. This is the acquisition-context linkage overview.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Artifact Acquisition Trace</h3>
+        <p>Use this section to inspect collected attachments, export artifacts, and failed or missing acquisition attempts. Supporting screenshots and XML are collapsed by default.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Key Events</h3>
+        <p>Review run, method, package, and artifact registration milestones without reading every audit row.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Attention Required</h3>
+        <p>Inspect these first. They are non-success outcomes that did not have a known recovery or benign classification.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Recovered Non-Success</h3>
+        <p>These events looked unsuccessful at the primitive level but were followed by a successful recovery or phase-level completion marker.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Benign Non-Success</h3>
+        <p>These are expected non-critical outcomes such as optional visual settle timeouts, already-open screens, or unchanged list checks.</p>
+      </section>
+      <section class="guide-card wide">
+        <h3>Raw JSON Details</h3>
+        <p>Every summary row keeps the original payload in folded JSON details. Expand these when you need the exact audit values used to build the report.</p>
+      </section>
+    </div>
+  </details>
+
+  <h2>Target Summary</h2>
+  <table><tbody><tr><th>Target app</th><td>whatsapp</td><th>Package</th><td><code>com.whatsapp</code></td></tr>
+<tr><th>App profile</th><td><code>profiles/apps/WhatsApp.json</code></td><th>Configured primitive</th><td>S2</td></tr>
+<tr><th>Run ID</th><td><code>AURA_SAMPLE_RUN</code></td><th>Phases observed</th><td>local-first</td></tr>
+<tr><th>AURA version</th><td>sample</td><th>Audit events</th><td>313</td></tr></tbody></table>
+  <h2>Artifact Trace Coverage</h2>
+  <table><thead><tr><th>Metric</th><th>Count</th><th>Coverage</th></tr></thead><tbody><tr><td>All artifacts represented in trace</td><td>33 / 33</td><td>100.0%</td></tr>
+<tr><td>Attachment artifacts represented in trace</td><td>13 / 13</td><td>100.0%</td></tr>
+<tr><td>Attachments linked to acquisition attempts</td><td>13 / 13</td><td>100.0%</td></tr>
+<tr><td>Attempt statuses</td><td colspan='2'><span class='chip'>success <span class='count'>21</span></span></td></tr></tbody></table>
+  <details class="advanced-block"><summary>Advanced linkage diagnostics</summary><p class="muted">These diagnostics separate direct event linkage from acquisition-attempt linkage. Lower values are not necessarily defects: many supporting artifacts are evidence for an action, but are not themselves acquisition targets with attempt records.</p><table><thead><tr><th>Diagnostic</th><th>Count</th><th>Coverage</th><th>How to interpret</th></tr></thead><tbody><tr><td>Artifacts linked to direct audit event</td><td>32 / 33</td><td>97.0%</td><td>Artifacts with a directly associated audit event. A value below 100% can be expected when a row is represented through derived context rather than a single source event.</td></tr>
+<tr><td>Artifacts linked to acquisition attempts</td><td>13 / 33</td><td>39.4%</td><td>Attempt records are mainly used for content-bearing acquisition targets such as attachments. Supporting artifacts such as screenshots and UI trees may not have an attempt concept, so this diagnostic is not expected to be 100%.</td></tr>
+<tr><td>Attachments linked to direct audit event</td><td>12 / 13</td><td>92.3%</td><td>Attachment files with a directly associated audit event. Missing or derived attachment relationships can lower this value while still remaining traceable through acquisition attempts.</td></tr></tbody></table></details>
+  <h2>Phase Summary</h2>
+  <table><thead><tr><th>Phase</th><th>Events</th><th>Attention Required</th><th>Recovered Non-Success</th><th>Benign Non-Success</th><th>Actions</th></tr></thead><tbody><tr><td>cleanup</td><td>20</td><td>1</td><td>0</td><td>1</td><td><span class='chip'>click <span class='count'>4</span></span> <span class='chip'>screen_state <span class='count'>3</span></span> <span class='chip'>screen_transition <span class='count'>3</span></span> <span class='chip'>click_attempt <span class='count'>2</span></span> <span class='chip'>adb_shell <span class='count'>1</span></span> <span class='chip'>bluetooth_device_details_stable <span class='count'>1</span></span> <span class='chip'>bluetooth_restore_android <span class='count'>1</span></span> <span class='chip'>bluetooth_toggle_stable <span class='count'>1</span></span> <span class='chip'>bluetooth_unpair_android <span class='count'>1</span></span> <span class='chip'>bluetooth_unpair_confirm <span class='count'>1</span></span> <span class='chip'>bluetooth_unpair_stable <span class='count'>1</span></span> <span class='chip'>press <span class='count'>1</span></span><details><summary>Raw phase JSON</summary><pre><code>{
+  &quot;actions&quot;: {
+    &quot;adb_shell&quot;: 1,
+    &quot;bluetooth_device_details_stable&quot;: 1,
+    &quot;bluetooth_restore_android&quot;: 1,
+    &quot;bluetooth_toggle_stable&quot;: 1,
+    &quot;bluetooth_unpair_android&quot;: 1,
+    &quot;bluetooth_unpair_confirm&quot;: 1,
+    &quot;bluetooth_unpair_stable&quot;: 1,
+    &quot;click&quot;: 4,
+    &quot;click_attempt&quot;: 2,
+    &quot;press&quot;: 1,
+    &quot;screen_state&quot;: 3,
+    &quot;screen_transition&quot;: 3
+  },
+  &quot;benign_events&quot;: 1,
+  &quot;event_count&quot;: 20,
+  &quot;failures&quot;: 1,
+  &quot;phase&quot;: &quot;cleanup&quot;,
+  &quot;recovered_events&quot;: 0
+}</code></pre></details></td></tr>
+<tr><td>controlled-online</td><td>6</td><td>0</td><td>0</td><td>0</td><td><span class='chip'>phase_disabled <span class='count'>1</span></span> <span class='chip'>restore_dnd_mode <span class='count'>1</span></span> <span class='chip'>system_ui_route_end <span class='count'>1</span></span> <span class='chip'>system_ui_route_start <span class='count'>1</span></span> <span class='chip'>system_ui_route_step <span class='count'>1</span></span> <span class='chip'>system_ui_toggle_state <span class='count'>1</span></span><details><summary>Raw phase JSON</summary><pre><code>{
+  &quot;actions&quot;: {
+    &quot;phase_disabled&quot;: 1,
+    &quot;restore_dnd_mode&quot;: 1,
+    &quot;system_ui_route_end&quot;: 1,
+    &quot;system_ui_route_start&quot;: 1,
+    &quot;system_ui_route_step&quot;: 1,
+    &quot;system_ui_toggle_state&quot;: 1
+  },
+  &quot;benign_events&quot;: 0,
+  &quot;event_count&quot;: 6,
+  &quot;failures&quot;: 0,
+  &quot;phase&quot;: &quot;controlled-online&quot;,
+  &quot;recovered_events&quot;: 0
+}</code></pre></details></td></tr>
+<tr><td>local-first</td><td>266</td><td>9</td><td>7</td><td>12</td><td><span class='chip'>screen_state <span class='count'>37</span></span> <span class='chip'>artifact_context_registered <span class='count'>33</span></span> <span class='chip'>click <span class='count'>29</span></span> <span class='chip'>click_attempt <span class='count'>27</span></span> <span class='chip'>export_chat_stage <span class='count'>27</span></span> <span class='chip'>bluetooth_pairing_dialog <span class='count'>6</span></span> <span class='chip'>attachment_validation_warning <span class='count'>3</span></span> <span class='chip'>bluetooth_host_finish <span class='count'>3</span></span> <span class='chip'>bluetooth_host_manual_required <span class='count'>3</span></span> <span class='chip'>bluetooth_host_prepare <span class='count'>3</span></span> <span class='chip'>bluetooth_picker_ready <span class='count'>3</span></span> <span class='chip'>bluetooth_receive_collect <span class='count'>3</span></span> <span class='chip'>bluetooth_receiver_precheck <span class='count'>3</span></span> <span class='chip'>bluetooth_targets_visible <span class='count'>3</span></span> <span class='muted'>+42 more</span><details><summary>Raw phase JSON</summary><pre><code>{
+  &quot;actions&quot;: {
+    &quot;adb_shell&quot;: 1,
+    &quot;app_launch&quot;: 1,
+    &quot;app_ready&quot;: 1,
+    &quot;app_start&quot;: 1,
+    &quot;artifact_context_registered&quot;: 33,
+    &quot;attachment_validation_warning&quot;: 3,
+    &quot;bluetooth_connected_verify&quot;: 1,
+    &quot;bluetooth_device_list_stable&quot;: 1,
+    &quot;bluetooth_host_finish&quot;: 3,
+    &quot;bluetooth_host_manual_required&quot;: 3,
+    &quot;bluetooth_host_prepare&quot;: 3,
+    &quot;bluetooth_pairing_dialog&quot;: 6,
+    &quot;bluetooth_picker_ready&quot;: 3,
+    &quot;bluetooth_preconnect_end&quot;: 1,
+    &quot;bluetooth_preconnect_start&quot;: 1,
+    &quot;bluetooth_receive_collect&quot;: 3,
+    &quot;bluetooth_receiver_precheck&quot;: 3,
+    &quot;bluetooth_targets_visible&quot;: 3,
+    &quot;bluetooth_toggle_stable&quot;: 1,
+    &quot;chat_export_pass_end&quot;: 1,
+    &quot;chat_export_pass_start&quot;: 1,
+    &quot;chat_list_discovery_done&quot;: 1,
+    &quot;chat_list_discovery_snapshot&quot;: 1,
+    &quot;chat_list_discovery_start&quot;: 1,
+    &quot;chat_list_return&quot;: 3,
+    &quot;chatrooms_collect_end&quot;: 1,
+    &quot;chatrooms_collect_start&quot;: 1,
+    &quot;click&quot;: 29,
+    &quot;click_attempt&quot;: 27,
+    &quot;commit_whatsapp_export_records&quot;: 3,
+    &quot;copy_received_export&quot;: 3,
+    &quot;export_chat&quot;: 3,
+    &quot;export_chat_end&quot;: 3,
+    &quot;export_chat_stage&quot;: 27,
+    &quot;export_chat_start&quot;: 3,
+    &quot;extract_export_archive&quot;: 3,
+    &quot;list_state&quot;: 1,
+    &quot;parse_chat_text&quot;: 3,
+    &quot;phase_end&quot;: 2,
+    &quot;phase_enforce&quot;: 3,
+    &quot;phase_enforce_state&quot;: 1,
+    &quot;phase_start&quot;: 2,
+    &quot;press&quot;: 3,
+    &quot;recovery&quot;: 3,
+    &quot;register_export_archive_artifact&quot;: 3,
+    &quot;screen_settled&quot;: 3,
+    &quot;screen_state&quot;: 37,
+    &quot;screen_transition&quot;: 3,
+    &quot;scroll_to_top&quot;: 2,
+    &quot;swipe&quot;: 1,
+    &quot;validate_attachment_mentions&quot;: 3,
+    &quot;whatsapp_export_analysis_summary&quot;: 3,
+    &quot;whatsapp_export_attachment_missing&quot;: 1,
+    &quot;whatsapp_export_ingest&quot;: 3,
+    &quot;whatsapp_export_parse_end&quot;: 3,
+    &quot;whatsapp_export_parse_start&quot;: 3
+  },
+  &quot;benign_events&quot;: 12,
+  &quot;event_count&quot;: 266,
+  &quot;failures&quot;: 9,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;recovered_events&quot;: 7
+}</code></pre></details></td></tr>
+<tr><td>orchestration</td><td>4</td><td>0</td><td>0</td><td>0</td><td><span class='chip'>method_end <span class='count'>1</span></span> <span class='chip'>method_start <span class='count'>1</span></span> <span class='chip'>orchestrator_end <span class='count'>1</span></span> <span class='chip'>orchestrator_start <span class='count'>1</span></span><details><summary>Raw phase JSON</summary><pre><code>{
+  &quot;actions&quot;: {
+    &quot;method_end&quot;: 1,
+    &quot;method_start&quot;: 1,
+    &quot;orchestrator_end&quot;: 1,
+    &quot;orchestrator_start&quot;: 1
+  },
+  &quot;benign_events&quot;: 0,
+  &quot;event_count&quot;: 4,
+  &quot;failures&quot;: 0,
+  &quot;phase&quot;: &quot;orchestration&quot;,
+  &quot;recovered_events&quot;: 0
+}</code></pre></details></td></tr>
+<tr><td>package</td><td>5</td><td>0</td><td>0</td><td>0</td><td><span class='chip'>artifact_hash_finalize_end <span class='count'>1</span></span> <span class='chip'>artifact_hash_finalize_start <span class='count'>1</span></span> <span class='chip'>audit_review_build_end <span class='count'>1</span></span> <span class='chip'>audit_review_build_start <span class='count'>1</span></span> <span class='chip'>packaging_start <span class='count'>1</span></span><details><summary>Raw phase JSON</summary><pre><code>{
+  &quot;actions&quot;: {
+    &quot;artifact_hash_finalize_end&quot;: 1,
+    &quot;artifact_hash_finalize_start&quot;: 1,
+    &quot;audit_review_build_end&quot;: 1,
+    &quot;audit_review_build_start&quot;: 1,
+    &quot;packaging_start&quot;: 1
+  },
+  &quot;benign_events&quot;: 0,
+  &quot;event_count&quot;: 5,
+  &quot;failures&quot;: 0,
+  &quot;phase&quot;: &quot;package&quot;,
+  &quot;recovered_events&quot;: 0
+}</code></pre></details></td></tr>
+<tr><td>setup</td><td>11</td><td>0</td><td>0</td><td>0</td><td><span class='chip'>press <span class='count'>2</span></span> <span class='chip'>clear_recent <span class='count'>1</span></span> <span class='chip'>device_connect_end <span class='count'>1</span></span> <span class='chip'>device_connect_start <span class='count'>1</span></span> <span class='chip'>device_identify <span class='count'>1</span></span> <span class='chip'>initial_state_snapshot <span class='count'>1</span></span> <span class='chip'>run_start <span class='count'>1</span></span> <span class='chip'>system_ui_route_end <span class='count'>1</span></span> <span class='chip'>system_ui_route_start <span class='count'>1</span></span> <span class='chip'>unlock <span class='count'>1</span></span><details><summary>Raw phase JSON</summary><pre><code>{
+  &quot;actions&quot;: {
+    &quot;clear_recent&quot;: 1,
+    &quot;device_connect_end&quot;: 1,
+    &quot;device_connect_start&quot;: 1,
+    &quot;device_identify&quot;: 1,
+    &quot;initial_state_snapshot&quot;: 1,
+    &quot;press&quot;: 2,
+    &quot;run_start&quot;: 1,
+    &quot;system_ui_route_end&quot;: 1,
+    &quot;system_ui_route_start&quot;: 1,
+    &quot;unlock&quot;: 1
+  },
+  &quot;benign_events&quot;: 0,
+  &quot;event_count&quot;: 11,
+  &quot;failures&quot;: 0,
+  &quot;phase&quot;: &quot;setup&quot;,
+  &quot;recovered_events&quot;: 0
+}</code></pre></details></td></tr>
+<tr><td>unscoped</td><td>1</td><td>0</td><td>0</td><td>0</td><td><span class='chip'>bluetooth_target_resolved <span class='count'>1</span></span><details><summary>Raw phase JSON</summary><pre><code>{
+  &quot;actions&quot;: {
+    &quot;bluetooth_target_resolved&quot;: 1
+  },
+  &quot;benign_events&quot;: 0,
+  &quot;event_count&quot;: 1,
+  &quot;failures&quot;: 0,
+  &quot;phase&quot;: &quot;unscoped&quot;,
+  &quot;recovered_events&quot;: 0
+}</code></pre></details></td></tr></tbody></table>
+  <h2>Artifact Summary</h2>
+  <table><thead><tr><th>Phase</th><th>Kind</th><th>Source Action</th><th>Source Screen</th><th>Count</th><th>Sample</th></tr></thead><tbody><tr><td>local-first</td><td>attachment_export_media</td><td>parse_whatsapp_export_zip</td><td>whatsapp_export_zip</td><td>13</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_video.mp4</code><details><summary>Raw artifact group JSON</summary><pre><code>{
+  &quot;count&quot;: 13,
+  &quot;kind&quot;: &quot;attachment_export_media&quot;,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;sample_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+  &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+  &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+}</code></pre></details></td></tr>
+<tr><td>local-first</td><td>screenshot_chat_list</td><td>unknown</td><td>unknown</td><td>1</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Chat List\chat_list_discovery_0.jpg</code><details><summary>Raw artifact group JSON</summary><pre><code>{
+  &quot;count&quot;: 1,
+  &quot;kind&quot;: &quot;screenshot_chat_list&quot;,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;sample_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Chat List\\chat_list_discovery_0.jpg&quot;,
+  &quot;source_action&quot;: &quot;unknown&quot;,
+  &quot;source_screen&quot;: &quot;unknown&quot;
+}</code></pre></details></td></tr>
+<tr><td>local-first</td><td>screenshot_export_share</td><td>capture_export_share_sheet</td><td>android_share_sheet</td><td>3</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\dce95a2b8c4f9044791d5dfb790d6b925eaae12d6435e8c248a26dade1fa9d24_share.jpg</code><details><summary>Raw artifact group JSON</summary><pre><code>{
+  &quot;count&quot;: 3,
+  &quot;kind&quot;: &quot;screenshot_export_share&quot;,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;sample_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\dce95a2b8c4f9044791d5dfb790d6b925eaae12d6435e8c248a26dade1fa9d24_share.jpg&quot;,
+  &quot;source_action&quot;: &quot;capture_export_share_sheet&quot;,
+  &quot;source_screen&quot;: &quot;android_share_sheet&quot;
+}</code></pre></details></td></tr>
+<tr><td>local-first</td><td>screenshot_screen_state_timeout</td><td>unknown</td><td>unknown</td><td>3</td><td><code>RUN_ROOT\whatsapp\_screen_state_timeouts\1780458143509_bluetooth_target_connected_HOST_PC.jpg</code><details><summary>Raw artifact group JSON</summary><pre><code>{
+  &quot;count&quot;: 3,
+  &quot;kind&quot;: &quot;screenshot_screen_state_timeout&quot;,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;sample_path&quot;: &quot;RUN_ROOT\\whatsapp\\_screen_state_timeouts\\1780458143509_bluetooth_target_connected_HOST_PC.jpg&quot;,
+  &quot;source_action&quot;: &quot;unknown&quot;,
+  &quot;source_screen&quot;: &quot;unknown&quot;
+}</code></pre></details></td></tr>
+<tr><td>local-first</td><td>uitree_chat_list</td><td>unknown</td><td>unknown</td><td>1</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Chat List\chat_list_discovery_0.xml</code><details><summary>Raw artifact group JSON</summary><pre><code>{
+  &quot;count&quot;: 1,
+  &quot;kind&quot;: &quot;uitree_chat_list&quot;,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;sample_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Chat List\\chat_list_discovery_0.xml&quot;,
+  &quot;source_action&quot;: &quot;unknown&quot;,
+  &quot;source_screen&quot;: &quot;unknown&quot;
+}</code></pre></details></td></tr>
+<tr><td>local-first</td><td>uitree_export_share</td><td>capture_export_share_sheet</td><td>android_share_sheet</td><td>3</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\dce95a2b8c4f9044791d5dfb790d6b925eaae12d6435e8c248a26dade1fa9d24_share.xml</code><details><summary>Raw artifact group JSON</summary><pre><code>{
+  &quot;count&quot;: 3,
+  &quot;kind&quot;: &quot;uitree_export_share&quot;,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;sample_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\dce95a2b8c4f9044791d5dfb790d6b925eaae12d6435e8c248a26dade1fa9d24_share.xml&quot;,
+  &quot;source_action&quot;: &quot;capture_export_share_sheet&quot;,
+  &quot;source_screen&quot;: &quot;android_share_sheet&quot;
+}</code></pre></details></td></tr>
+<tr><td>local-first</td><td>uitree_screen_state_timeout</td><td>unknown</td><td>unknown</td><td>3</td><td><code>RUN_ROOT\whatsapp\_screen_state_timeouts\1780458143509_bluetooth_target_connected_HOST_PC.xml</code><details><summary>Raw artifact group JSON</summary><pre><code>{
+  &quot;count&quot;: 3,
+  &quot;kind&quot;: &quot;uitree_screen_state_timeout&quot;,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;sample_path&quot;: &quot;RUN_ROOT\\whatsapp\\_screen_state_timeouts\\1780458143509_bluetooth_target_connected_HOST_PC.xml&quot;,
+  &quot;source_action&quot;: &quot;unknown&quot;,
+  &quot;source_screen&quot;: &quot;unknown&quot;
+}</code></pre></details></td></tr>
+<tr><td>local-first</td><td>whatsapp_export_text</td><td>extract_export_archive</td><td>whatsapp_export_zip</td><td>3</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt</code><details><summary>Raw artifact group JSON</summary><pre><code>{
+  &quot;count&quot;: 3,
+  &quot;kind&quot;: &quot;whatsapp_export_text&quot;,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;sample_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt&quot;,
+  &quot;source_action&quot;: &quot;extract_export_archive&quot;,
+  &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+}</code></pre></details></td></tr>
+<tr><td>local-first</td><td>whatsapp_export_zip</td><td>bluetooth_receive_collect</td><td>host_bluetooth_receiver</td><td>3</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT.zip</code><details><summary>Raw artifact group JSON</summary><pre><code>{
+  &quot;count&quot;: 3,
+  &quot;kind&quot;: &quot;whatsapp_export_zip&quot;,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;sample_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT.zip&quot;,
+  &quot;source_action&quot;: &quot;bluetooth_receive_collect&quot;,
+  &quot;source_screen&quot;: &quot;host_bluetooth_receiver&quot;
+}</code></pre></details></td></tr></tbody></table>
+  <h2>Artifact Acquisition Trace</h2>
+  <table><thead><tr><th>Kind</th><th>Path</th><th>Phase</th><th>Chat</th><th>Source Action</th><th>Audit Events</th><th>Attempts</th><th>Details</th></tr></thead><tbody><tr><td>whatsapp_export_text</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt</code></td><td>local-first</td><td>HASH_ID</td><td>extract_export_archive</td><td><span class='chip'>seq=130 artifact_context_registered:success</span></td><td><span class='muted'>none</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt&quot;,
+    &quot;artifact_kind&quot;: &quot;whatsapp_export_text&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: null,
+    &quot;file_name&quot;: null,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 1705,
+    &quot;source_action&quot;: &quot;extract_export_archive&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt&quot;,
+        &quot;kind=whatsapp_export_text&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=&quot;,
+        &quot;observation_id=&quot;,
+        &quot;source_action=extract_export_archive&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=1705&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;whatsapp_export_text&quot;,
+      &quot;seq&quot;: 130
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: null,
+    &quot;observation_id&quot;: null,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: null,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_video.mp4</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=133 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_video.mp4&quot;,
+    &quot;file_name&quot;: &quot;sample_video.mp4&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 10192868,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_7853cdeacf835cb65b32a1332c426189&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_b6c6256232ff9b137181d1d5&quot;,
+      &quot;display_filename&quot;: &quot;sample_video.mp4&quot;,
+      &quot;duration_sec&quot;: 118.676,
+      &quot;ended_audit_seq&quot;: 133,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 129,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_video.mp4&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=10192868&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 133
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=134 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+    &quot;file_name&quot;: &quot;sample_image.jpg&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 72170,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_152d49078510326064ce60bb2524706f&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_b6c6256232ff9b137181d1d5&quot;,
+      &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+      &quot;duration_sec&quot;: 118.69,
+      &quot;ended_audit_seq&quot;: 134,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 129,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_image.jpg&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=72170&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 134
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_document.docx</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=135 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span> <span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.docx&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.docx&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_document.docx&quot;,
+    &quot;file_name&quot;: &quot;sample_document.docx&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 274553,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_e3c483e14a3bce7b5f1dc702b0661396&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_b6c6256232ff9b137181d1d5&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.docx&quot;,
+      &quot;duration_sec&quot;: 118.709,
+      &quot;ended_audit_seq&quot;: 135,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 129,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.docx&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    },
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_373f7e9705a519d2b3281029918aedc4&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.docx&quot;,
+      &quot;duration_sec&quot;: 51.785,
+      &quot;ended_audit_seq&quot;: 201,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.docx&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.docx&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=274553&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 135
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>whatsapp_export_text</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\WhatsApp Chat with SAMPLE_CONTACT.txt</code></td><td>local-first</td><td>HASH_ID</td><td>extract_export_archive</td><td><span class='chip'>seq=192 artifact_context_registered:success</span></td><td><span class='muted'>none</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with SAMPLE_CONTACT.txt&quot;,
+    &quot;artifact_kind&quot;: &quot;whatsapp_export_text&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with SAMPLE_CONTACT.txt&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: null,
+    &quot;file_name&quot;: null,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 2302,
+    &quot;source_action&quot;: &quot;extract_export_archive&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with SAMPLE_CONTACT.txt&quot;,
+        &quot;kind=whatsapp_export_text&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=&quot;,
+        &quot;observation_id=&quot;,
+        &quot;source_action=extract_export_archive&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=2302&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;whatsapp_export_text&quot;,
+      &quot;seq&quot;: 192
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: null,
+    &quot;observation_id&quot;: null,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: null,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=195 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+    &quot;file_name&quot;: &quot;sample_image.jpg&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 42747,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_3499dd3aeb19d6ef170855426713b695&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+      &quot;duration_sec&quot;: 51.66,
+      &quot;ended_audit_seq&quot;: 195,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_image.jpg&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=42747&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 195
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=196 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+    &quot;file_name&quot;: &quot;sample_image.jpg&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 17256,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_ef3547e6e7c3afc399a258136ba51833&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+      &quot;duration_sec&quot;: 51.674,
+      &quot;ended_audit_seq&quot;: 196,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_image.jpg&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=17256&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 196
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_video.mp4</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=197 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_video.mp4&quot;,
+    &quot;file_name&quot;: &quot;sample_video.mp4&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 707545,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_c9f18a8c39477c5ecea0beb4556771f4&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_video.mp4&quot;,
+      &quot;duration_sec&quot;: 51.69,
+      &quot;ended_audit_seq&quot;: 197,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_video.mp4&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=707545&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 197
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=198 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+    &quot;file_name&quot;: &quot;sample_image.jpg&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 14732,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_3bc44822e40b1da455830376969306d7&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+      &quot;duration_sec&quot;: 51.702,
+      &quot;ended_audit_seq&quot;: 198,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_image.jpg&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=14732&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 198
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_document.pdf</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=200 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span> <span class='chip'>success:whatsapp_export_chat</span> <span class='chip'>success:whatsapp_export_chat</span> <span class='muted'>+1 more</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.pdf&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.pdf&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+    &quot;file_name&quot;: &quot;sample_document.pdf&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 3276644,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_46694b7283d47a23d6883c18bcfe297a&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+      &quot;duration_sec&quot;: 51.759,
+      &quot;ended_audit_seq&quot;: 199,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.pdf&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    },
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_46694b7283d47a23d6883c18bcfe297a&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+      &quot;duration_sec&quot;: 51.759,
+      &quot;ended_audit_seq&quot;: 199,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.pdf&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    },
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_5b04a00a998a71ad578645da1f2326d4&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+      &quot;duration_sec&quot;: 51.767,
+      &quot;ended_audit_seq&quot;: 200,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.pdf&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    },
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_5b04a00a998a71ad578645da1f2326d4&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+      &quot;duration_sec&quot;: 51.767,
+      &quot;ended_audit_seq&quot;: 200,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.pdf&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.pdf&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=3276644&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 200
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_document.docx</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=201 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span> <span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.docx&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.docx&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_document.docx&quot;,
+    &quot;file_name&quot;: &quot;sample_document.docx&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 274553,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_e3c483e14a3bce7b5f1dc702b0661396&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_b6c6256232ff9b137181d1d5&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.docx&quot;,
+      &quot;duration_sec&quot;: 118.709,
+      &quot;ended_audit_seq&quot;: 135,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 129,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.docx&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    },
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_373f7e9705a519d2b3281029918aedc4&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.docx&quot;,
+      &quot;duration_sec&quot;: 51.785,
+      &quot;ended_audit_seq&quot;: 201,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.docx&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.docx&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=274553&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 201
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>whatsapp_export_text</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\WhatsApp_Chat_with_SAMPLE_CONTACT\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt</code></td><td>local-first</td><td>HASH_ID</td><td>extract_export_archive</td><td><span class='chip'>seq=258 artifact_context_registered:success</span></td><td><span class='muted'>none</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt&quot;,
+    &quot;artifact_kind&quot;: &quot;whatsapp_export_text&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: null,
+    &quot;file_name&quot;: null,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 3372,
+    &quot;source_action&quot;: &quot;extract_export_archive&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt&quot;,
+        &quot;kind=whatsapp_export_text&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=&quot;,
+        &quot;observation_id=&quot;,
+        &quot;source_action=extract_export_archive&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=3372&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;whatsapp_export_text&quot;,
+      &quot;seq&quot;: 258
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: null,
+    &quot;observation_id&quot;: null,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: null,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=261 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+    &quot;file_name&quot;: &quot;sample_image.jpg&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 9568,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_eb76fe8a7a5e62b37d10699afa2203c9&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_63cce1d950a9b29fdd663a6b&quot;,
+      &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+      &quot;duration_sec&quot;: 30.566,
+      &quot;ended_audit_seq&quot;: 261,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 257,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_image.jpg&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=9568&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 261
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=262 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+    &quot;file_name&quot;: &quot;sample_image.jpg&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 6205,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_1a81786b1d68d340efcd14cb46381978&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_63cce1d950a9b29fdd663a6b&quot;,
+      &quot;display_filename&quot;: &quot;sample_image.jpg&quot;,
+      &quot;duration_sec&quot;: 30.576,
+      &quot;ended_audit_seq&quot;: 262,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 257,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_image.jpg&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=6205&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 262
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_video.mp4</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='chip'>seq=263 artifact_context_registered:success</span></td><td><span class='chip'>success:whatsapp_export_chat</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_video.mp4&quot;,
+    &quot;file_name&quot;: &quot;sample_video.mp4&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 615777,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_11ddbe6b88ca70ad02ab662e515cf4d6&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_63cce1d950a9b29fdd663a6b&quot;,
+      &quot;display_filename&quot;: &quot;sample_video.mp4&quot;,
+      &quot;duration_sec&quot;: 30.59,
+      &quot;ended_audit_seq&quot;: 263,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 257,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_video.mp4&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [
+    {
+      &quot;action&quot;: &quot;artifact_context_registered&quot;,
+      &quot;artifacts&quot;: [
+        &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+        &quot;kind=attachment_export_media&quot;,
+        &quot;phase=local-first&quot;,
+        &quot;account=&quot;,
+        &quot;chat_id=HASH_ID&quot;,
+        &quot;message_id=HASH_ID&quot;,
+        &quot;observation_id=HASH_ID:primary&quot;,
+        &quot;source_action=parse_whatsapp_export_zip&quot;,
+        &quot;source_screen=whatsapp_export_zip&quot;,
+        &quot;size_bytes=615777&quot;
+      ],
+      &quot;error&quot;: null,
+      &quot;phase&quot;: &quot;local-first&quot;,
+      &quot;result&quot;: &quot;success&quot;,
+      &quot;selector&quot;: &quot;attachment_export_media&quot;,
+      &quot;seq&quot;: 263
+    }
+  ],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr>
+<tr><td>attachment_export_media</td><td><code>RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_document.pdf</code></td><td>local-first</td><td>HASH_ID</td><td>parse_whatsapp_export_zip</td><td><span class='muted'>none</span></td><td><span class='chip'>success:whatsapp_export_chat</span> <span class='chip'>success:whatsapp_export_chat</span> <span class='chip'>success:whatsapp_export_chat</span> <span class='muted'>+1 more</span></td><td><details><summary>Raw acquisition trace JSON</summary><pre><code>{
+  &quot;artifact&quot;: {
+    &quot;artifact_id&quot;: &quot;AURA_SAMPLE_RUN:RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.pdf&quot;,
+    &quot;artifact_kind&quot;: &quot;attachment_export_media&quot;,
+    &quot;artifact_path&quot;: &quot;RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.pdf&quot;,
+    &quot;content_group_id&quot;: &quot;HASH_ID&quot;,
+    &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+    &quot;file_name&quot;: &quot;sample_document.pdf&quot;,
+    &quot;sha256&quot;: &quot;HASH_ID&quot;,
+    &quot;size_bytes&quot;: 3276644,
+    &quot;source_action&quot;: &quot;parse_whatsapp_export_zip&quot;,
+    &quot;source_screen&quot;: &quot;whatsapp_export_zip&quot;
+  },
+  &quot;attempts&quot;: [
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_46694b7283d47a23d6883c18bcfe297a&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+      &quot;duration_sec&quot;: 51.759,
+      &quot;ended_audit_seq&quot;: 199,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.pdf&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    },
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_46694b7283d47a23d6883c18bcfe297a&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+      &quot;duration_sec&quot;: 51.759,
+      &quot;ended_audit_seq&quot;: 199,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.pdf&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    },
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_5b04a00a998a71ad578645da1f2326d4&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+      &quot;duration_sec&quot;: 51.767,
+      &quot;ended_audit_seq&quot;: 200,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.pdf&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    },
+    {
+      &quot;artifact_materialized&quot;: 1,
+      &quot;attempt_id&quot;: &quot;wa_export_5b04a00a998a71ad578645da1f2326d4&quot;,
+      &quot;audit_operation_id&quot;: &quot;op_whatsapp_export_d30972e15ae42a081036a28b&quot;,
+      &quot;display_filename&quot;: &quot;sample_document.pdf&quot;,
+      &quot;duration_sec&quot;: 51.767,
+      &quot;ended_audit_seq&quot;: 200,
+      &quot;error&quot;: null,
+      &quot;failure_reason&quot;: null,
+      &quot;method&quot;: &quot;S2&quot;,
+      &quot;primitive&quot;: &quot;whatsapp_export_zip_parse&quot;,
+      &quot;route_id&quot;: &quot;whatsapp_export_chat&quot;,
+      &quot;screenshot_artifact_id&quot;: null,
+      &quot;screenshot_path&quot;: null,
+      &quot;started_audit_seq&quot;: 191,
+      &quot;status&quot;: &quot;success&quot;,
+      &quot;target_label&quot;: &quot;sample_document.pdf&quot;,
+      &quot;target_type&quot;: &quot;attachment&quot;,
+      &quot;ui_reached&quot;: 1,
+      &quot;uitree_artifact_id&quot;: null,
+      &quot;uitree_path&quot;: null
+    }
+  ],
+  &quot;audit_events&quot;: [],
+  &quot;context&quot;: {
+    &quot;account&quot;: &quot;&quot;,
+    &quot;chat_id&quot;: &quot;HASH_ID&quot;,
+    &quot;message_id&quot;: &quot;HASH_ID&quot;,
+    &quot;observation_id&quot;: &quot;HASH_ID:primary&quot;,
+    &quot;phase&quot;: &quot;local-first&quot;,
+    &quot;record_id&quot;: &quot;HASH_ID&quot;,
+    &quot;run_id&quot;: &quot;AURA_SAMPLE_RUN&quot;
+  }
+}</code></pre></details></td></tr></tbody></table>
+  <details class='advanced-block'><summary>Supporting artifact traces (17)</summary><p class='muted'>Screenshots, UI trees, timeout captures, and other supporting evidence are traceable but collapsed by default to keep the review focused on collected content and failed/missing attempts.</p><div><span class='chip'>screenshot_export_share <span class='count'>3</span></span> <span class='chip'>screenshot_screen_state_timeout <span class='count'>3</span></span> <span class='chip'>uitree_export_share <span class='count'>3</span></span> <span class='chip'>uitree_screen_state_timeout <span class='count'>3</span></span> <span class='chip'>whatsapp_export_zip <span class='count'>3</span></span> <span class='chip'>screenshot_chat_list <span class='count'>1</span></span> <span class='chip'>uitree_chat_list <span class='count'>1</span></span></div><p class='muted'>Open the review JSON for per-supporting-artifact details.</p></details>
+  <h2>Key Events</h2>
+  <table><thead><tr><th>Seq</th><th>Phase</th><th>Action</th><th>Selector</th><th>Result</th><th>Artifacts</th></tr></thead><tbody><tr><td>1</td><td>setup</td><td>run_start</td><td>whatsapp</td><td>success</td><td><span class='chip'>target=whatsapp</span> <span class='chip'>run_root=RUN_ROOT</span> <span class='chip'>target_dir=RUN_ROOT\whatsapp</span> <span class='muted'>+4 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;run_start&quot;,
+  &quot;artifacts&quot;: [
+    &quot;target=whatsapp&quot;,
+    &quot;run_root=RUN_ROOT&quot;,
+    &quot;target_dir=RUN_ROOT\\whatsapp&quot;,
+    &quot;profile=profiles/apps/WhatsApp.json&quot;,
+    &quot;serial=REQ4C19418000940&quot;,
+    &quot;aura_version=1.0&quot;,
+    &quot;methods=S2&quot;
+  ],
+  &quot;phase&quot;: &quot;setup&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;whatsapp&quot;,
+  &quot;seq&quot;: 1
+}</code></pre></details></td></tr>
+<tr><td>12</td><td>orchestration</td><td>orchestrator_start</td><td>whatsapp</td><td>success</td><td><span class='chip'>target=whatsapp</span> <span class='chip'>methods=S2</span> <span class='chip'>run_root=RUN_ROOT</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;orchestrator_start&quot;,
+  &quot;artifacts&quot;: [
+    &quot;target=whatsapp&quot;,
+    &quot;methods=S2&quot;,
+    &quot;run_root=RUN_ROOT&quot;
+  ],
+  &quot;phase&quot;: &quot;orchestration&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;whatsapp&quot;,
+  &quot;seq&quot;: 12
+}</code></pre></details></td></tr>
+<tr><td>13</td><td>orchestration</td><td>method_start</td><td>S2</td><td>success</td><td><span class='chip'>method=S2</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;method_start&quot;,
+  &quot;artifacts&quot;: [
+    &quot;method=S2&quot;
+  ],
+  &quot;phase&quot;: &quot;orchestration&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;S2&quot;,
+  &quot;seq&quot;: 13
+}</code></pre></details></td></tr>
+<tr><td>32</td><td>local-first</td><td>artifact_context_registered</td><td>screenshot_screen_state_timeout</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\_screen_state_timeouts\1780458143509_bluetooth_target_connected_HOST_PC.jpg</span> <span class='chip'>kind=screenshot_screen_state_timeout</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\_screen_state_timeouts\\1780458143509_bluetooth_target_connected_HOST_PC.jpg&quot;,
+    &quot;kind=screenshot_screen_state_timeout&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=&quot;,
+    &quot;source_screen=&quot;,
+    &quot;size_bytes=101264&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;screenshot_screen_state_timeout&quot;,
+  &quot;seq&quot;: 32
+}</code></pre></details></td></tr>
+<tr><td>33</td><td>local-first</td><td>artifact_context_registered</td><td>uitree_screen_state_timeout</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\_screen_state_timeouts\1780458143509_bluetooth_target_connected_HOST_PC.xml</span> <span class='chip'>kind=uitree_screen_state_timeout</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\_screen_state_timeouts\\1780458143509_bluetooth_target_connected_HOST_PC.xml&quot;,
+    &quot;kind=uitree_screen_state_timeout&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=&quot;,
+    &quot;source_screen=&quot;,
+    &quot;size_bytes=51182&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;uitree_screen_state_timeout&quot;,
+  &quot;seq&quot;: 33
+}</code></pre></details></td></tr>
+<tr><td>38</td><td>local-first</td><td>artifact_context_registered</td><td>screenshot_screen_state_timeout</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\_screen_state_timeouts\1780458154148_bluetooth_target_connected_HOST_PC.jpg</span> <span class='chip'>kind=screenshot_screen_state_timeout</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\_screen_state_timeouts\\1780458154148_bluetooth_target_connected_HOST_PC.jpg&quot;,
+    &quot;kind=screenshot_screen_state_timeout&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=&quot;,
+    &quot;source_screen=&quot;,
+    &quot;size_bytes=122146&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;screenshot_screen_state_timeout&quot;,
+  &quot;seq&quot;: 38
+}</code></pre></details></td></tr>
+<tr><td>39</td><td>local-first</td><td>artifact_context_registered</td><td>uitree_screen_state_timeout</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\_screen_state_timeouts\1780458154148_bluetooth_target_connected_HOST_PC.xml</span> <span class='chip'>kind=uitree_screen_state_timeout</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\_screen_state_timeouts\\1780458154148_bluetooth_target_connected_HOST_PC.xml&quot;,
+    &quot;kind=uitree_screen_state_timeout&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=&quot;,
+    &quot;source_screen=&quot;,
+    &quot;size_bytes=29478&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;uitree_screen_state_timeout&quot;,
+  &quot;seq&quot;: 39
+}</code></pre></details></td></tr>
+<tr><td>49</td><td>local-first</td><td>artifact_context_registered</td><td>screenshot_screen_state_timeout</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\_screen_state_timeouts\1780458176043_bluetooth_target_connected_HOST_PC.jpg</span> <span class='chip'>kind=screenshot_screen_state_timeout</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\_screen_state_timeouts\\1780458176043_bluetooth_target_connected_HOST_PC.jpg&quot;,
+    &quot;kind=screenshot_screen_state_timeout&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=&quot;,
+    &quot;source_screen=&quot;,
+    &quot;size_bytes=105915&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;screenshot_screen_state_timeout&quot;,
+  &quot;seq&quot;: 49
+}</code></pre></details></td></tr>
+<tr><td>50</td><td>local-first</td><td>artifact_context_registered</td><td>uitree_screen_state_timeout</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\_screen_state_timeouts\1780458176043_bluetooth_target_connected_HOST_PC.xml</span> <span class='chip'>kind=uitree_screen_state_timeout</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\_screen_state_timeouts\\1780458176043_bluetooth_target_connected_HOST_PC.xml&quot;,
+    &quot;kind=uitree_screen_state_timeout&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=&quot;,
+    &quot;source_screen=&quot;,
+    &quot;size_bytes=52533&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;uitree_screen_state_timeout&quot;,
+  &quot;seq&quot;: 50
+}</code></pre></details></td></tr>
+<tr><td>72</td><td>local-first</td><td>artifact_context_registered</td><td>screenshot_chat_list</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Chat List\chat_list_discovery_0.jpg</span> <span class='chip'>kind=screenshot_chat_list</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Chat List\\chat_list_discovery_0.jpg&quot;,
+    &quot;kind=screenshot_chat_list&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=&quot;,
+    &quot;source_screen=&quot;,
+    &quot;size_bytes=135497&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;screenshot_chat_list&quot;,
+  &quot;seq&quot;: 72
+}</code></pre></details></td></tr>
+<tr><td>73</td><td>local-first</td><td>artifact_context_registered</td><td>uitree_chat_list</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Chat List\chat_list_discovery_0.xml</span> <span class='chip'>kind=uitree_chat_list</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Chat List\\chat_list_discovery_0.xml&quot;,
+    &quot;kind=uitree_chat_list&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=&quot;,
+    &quot;source_screen=&quot;,
+    &quot;size_bytes=81387&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;uitree_chat_list&quot;,
+  &quot;seq&quot;: 73
+}</code></pre></details></td></tr>
+<tr><td>109</td><td>local-first</td><td>artifact_context_registered</td><td>screenshot_export_share</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\dce95a2b8c4f9044791d5dfb790d6b925eaae12d6435e8c248a26dade1fa9d24_share.jpg</span> <span class='chip'>kind=screenshot_export_share</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\dce95a2b8c4f9044791d5dfb790d6b925eaae12d6435e8c248a26dade1fa9d24_share.jpg&quot;,
+    &quot;kind=screenshot_export_share&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=capture_export_share_sheet&quot;,
+    &quot;source_screen=android_share_sheet&quot;,
+    &quot;size_bytes=145540&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;screenshot_export_share&quot;,
+  &quot;seq&quot;: 109
+}</code></pre></details></td></tr>
+<tr><td>110</td><td>local-first</td><td>artifact_context_registered</td><td>uitree_export_share</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\dce95a2b8c4f9044791d5dfb790d6b925eaae12d6435e8c248a26dade1fa9d24_share.xml</span> <span class='chip'>kind=uitree_export_share</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\dce95a2b8c4f9044791d5dfb790d6b925eaae12d6435e8c248a26dade1fa9d24_share.xml&quot;,
+    &quot;kind=uitree_export_share&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=capture_export_share_sheet&quot;,
+    &quot;source_screen=android_share_sheet&quot;,
+    &quot;size_bytes=48599&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;uitree_export_share&quot;,
+  &quot;seq&quot;: 110
+}</code></pre></details></td></tr>
+<tr><td>127</td><td>local-first</td><td>artifact_context_registered</td><td>whatsapp_export_zip</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT.zip</span> <span class='chip'>kind=whatsapp_export_zip</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT.zip&quot;,
+    &quot;kind=whatsapp_export_zip&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=bluetooth_receive_collect&quot;,
+    &quot;source_screen=host_bluetooth_receiver&quot;,
+    &quot;size_bytes=10190934&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;whatsapp_export_zip&quot;,
+  &quot;seq&quot;: 127
+}</code></pre></details></td></tr>
+<tr><td>130</td><td>local-first</td><td>artifact_context_registered</td><td>whatsapp_export_text</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt</span> <span class='chip'>kind=whatsapp_export_text</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt&quot;,
+    &quot;kind=whatsapp_export_text&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=extract_export_archive&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=1705&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;whatsapp_export_text&quot;,
+  &quot;seq&quot;: 130
+}</code></pre></details></td></tr>
+<tr><td>133</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_video.mp4</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=10192868&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 133
+}</code></pre></details></td></tr>
+<tr><td>134</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=72170&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 134
+}</code></pre></details></td></tr>
+<tr><td>135</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_PHONE_CHATID\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_document.docx</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_PHONE_CHATID\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.docx&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=274553&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 135
+}</code></pre></details></td></tr>
+<tr><td>171</td><td>local-first</td><td>artifact_context_registered</td><td>screenshot_export_share</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\e6c7e912b8fbd15e3d9ff12d9ca5a5bbf59deff9faf4580445eff999fa11d103_share.jpg</span> <span class='chip'>kind=screenshot_export_share</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\e6c7e912b8fbd15e3d9ff12d9ca5a5bbf59deff9faf4580445eff999fa11d103_share.jpg&quot;,
+    &quot;kind=screenshot_export_share&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=capture_export_share_sheet&quot;,
+    &quot;source_screen=android_share_sheet&quot;,
+    &quot;size_bytes=143680&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;screenshot_export_share&quot;,
+  &quot;seq&quot;: 171
+}</code></pre></details></td></tr>
+<tr><td>172</td><td>local-first</td><td>artifact_context_registered</td><td>uitree_export_share</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\e6c7e912b8fbd15e3d9ff12d9ca5a5bbf59deff9faf4580445eff999fa11d103_share.xml</span> <span class='chip'>kind=uitree_export_share</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\e6c7e912b8fbd15e3d9ff12d9ca5a5bbf59deff9faf4580445eff999fa11d103_share.xml&quot;,
+    &quot;kind=uitree_export_share&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=capture_export_share_sheet&quot;,
+    &quot;source_screen=android_share_sheet&quot;,
+    &quot;size_bytes=48599&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;uitree_export_share&quot;,
+  &quot;seq&quot;: 172
+}</code></pre></details></td></tr>
+<tr><td>189</td><td>local-first</td><td>artifact_context_registered</td><td>whatsapp_export_zip</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT.zip</span> <span class='chip'>kind=whatsapp_export_zip</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT.zip&quot;,
+    &quot;kind=whatsapp_export_zip&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=bluetooth_receive_collect&quot;,
+    &quot;source_screen=host_bluetooth_receiver&quot;,
+    &quot;size_bytes=3608081&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;whatsapp_export_zip&quot;,
+  &quot;seq&quot;: 189
+}</code></pre></details></td></tr>
+<tr><td>192</td><td>local-first</td><td>artifact_context_registered</td><td>whatsapp_export_text</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\WhatsApp Chat with SAMPLE_CONTACT.txt</span> <span class='chip'>kind=whatsapp_export_text</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with SAMPLE_CONTACT.txt&quot;,
+    &quot;kind=whatsapp_export_text&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=extract_export_archive&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=2302&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;whatsapp_export_text&quot;,
+  &quot;seq&quot;: 192
+}</code></pre></details></td></tr>
+<tr><td>195</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=42747&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 195
+}</code></pre></details></td></tr>
+<tr><td>196</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=17256&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 196
+}</code></pre></details></td></tr>
+<tr><td>197</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_video.mp4</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=707545&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 197
+}</code></pre></details></td></tr>
+<tr><td>198</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=14732&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 198
+}</code></pre></details></td></tr>
+<tr><td>199</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_document.pdf</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.pdf&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=3276644&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 199
+}</code></pre></details></td></tr>
+<tr><td>200</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_document.pdf</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.pdf&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=3276644&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 200
+}</code></pre></details></td></tr>
+<tr><td>201</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_ALIAS\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_document.docx</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_ALIAS\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_document.docx&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=274553&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 201
+}</code></pre></details></td></tr>
+<tr><td>237</td><td>local-first</td><td>artifact_context_registered</td><td>screenshot_export_share</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\5ae73bf0f0f69c0d7f3f94c22e990fc272dac58bd0d21449e1c5caba28980c6c_share.jpg</span> <span class='chip'>kind=screenshot_export_share</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\5ae73bf0f0f69c0d7f3f94c22e990fc272dac58bd0d21449e1c5caba28980c6c_share.jpg&quot;,
+    &quot;kind=screenshot_export_share&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=capture_export_share_sheet&quot;,
+    &quot;source_screen=android_share_sheet&quot;,
+    &quot;size_bytes=178627&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;screenshot_export_share&quot;,
+  &quot;seq&quot;: 237
+}</code></pre></details></td></tr>
+<tr><td>238</td><td>local-first</td><td>artifact_context_registered</td><td>uitree_export_share</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\5ae73bf0f0f69c0d7f3f94c22e990fc272dac58bd0d21449e1c5caba28980c6c_share.xml</span> <span class='chip'>kind=uitree_export_share</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\5ae73bf0f0f69c0d7f3f94c22e990fc272dac58bd0d21449e1c5caba28980c6c_share.xml&quot;,
+    &quot;kind=uitree_export_share&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=capture_export_share_sheet&quot;,
+    &quot;source_screen=android_share_sheet&quot;,
+    &quot;size_bytes=48599&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;uitree_export_share&quot;,
+  &quot;seq&quot;: 238
+}</code></pre></details></td></tr>
+<tr><td>255</td><td>local-first</td><td>artifact_context_registered</td><td>whatsapp_export_zip</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\WhatsApp_Chat_with_SAMPLE_CONTACT.zip</span> <span class='chip'>kind=whatsapp_export_zip</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT.zip&quot;,
+    &quot;kind=whatsapp_export_zip&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=bluetooth_receive_collect&quot;,
+    &quot;source_screen=host_bluetooth_receiver&quot;,
+    &quot;size_bytes=629525&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;whatsapp_export_zip&quot;,
+  &quot;seq&quot;: 255
+}</code></pre></details></td></tr>
+<tr><td>258</td><td>local-first</td><td>artifact_context_registered</td><td>whatsapp_export_text</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\WhatsApp_Chat_with_SAMPLE_CONTACT\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt</span> <span class='chip'>kind=whatsapp_export_text</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\WhatsApp Chat with CHAT_SAMPLE_PHONE.txt&quot;,
+    &quot;kind=whatsapp_export_text&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=&quot;,
+    &quot;observation_id=&quot;,
+    &quot;source_action=extract_export_archive&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=3372&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;whatsapp_export_text&quot;,
+  &quot;seq&quot;: 258
+}</code></pre></details></td></tr>
+<tr><td>261</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=9568&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 261
+}</code></pre></details></td></tr>
+<tr><td>262</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_image.jpg</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_image.jpg&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=6205&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 262
+}</code></pre></details></td></tr>
+<tr><td>263</td><td>local-first</td><td>artifact_context_registered</td><td>attachment_export_media</td><td>success</td><td><span class='chip'>path=RUN_ROOT\whatsapp\local-first\Chat History\Export\CHAT_SAMPLE_SELF\WhatsApp_Chat_with_SAMPLE_CONTACT\sample_video.mp4</span> <span class='chip'>kind=attachment_export_media</span> <span class='chip'>phase=local-first</span> <span class='muted'>+7 more</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;artifact_context_registered&quot;,
+  &quot;artifacts&quot;: [
+    &quot;path=RUN_ROOT\\whatsapp\\local-first\\Chat History\\Export\\CHAT_SAMPLE_SELF\\WhatsApp_Chat_with_SAMPLE_CONTACT\\sample_video.mp4&quot;,
+    &quot;kind=attachment_export_media&quot;,
+    &quot;phase=local-first&quot;,
+    &quot;account=&quot;,
+    &quot;chat_id=HASH_ID&quot;,
+    &quot;message_id=HASH_ID&quot;,
+    &quot;observation_id=HASH_ID:primary&quot;,
+    &quot;source_action=parse_whatsapp_export_zip&quot;,
+    &quot;source_screen=whatsapp_export_zip&quot;,
+    &quot;size_bytes=615777&quot;
+  ],
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;attachment_export_media&quot;,
+  &quot;seq&quot;: 263
+}</code></pre></details></td></tr>
+<tr><td>307</td><td>orchestration</td><td>method_end</td><td>S2</td><td>success</td><td><span class='chip'>method=S2</span> <span class='chip'>status=done</span> <span class='chip'>elapsed=361.29s</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;method_end&quot;,
+  &quot;artifacts&quot;: [
+    &quot;method=S2&quot;,
+    &quot;status=done&quot;,
+    &quot;elapsed=361.29s&quot;
+  ],
+  &quot;phase&quot;: &quot;orchestration&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;S2&quot;,
+  &quot;seq&quot;: 307
+}</code></pre></details></td></tr>
+<tr><td>308</td><td>orchestration</td><td>orchestrator_end</td><td>whatsapp</td><td>success</td><td><span class='chip'>elapsed=361.29s</span> <span class='chip'>summary={&#x27;S2&#x27;: {&#x27;status&#x27;: &#x27;done&#x27;}}</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;orchestrator_end&quot;,
+  &quot;artifacts&quot;: [
+    &quot;elapsed=361.29s&quot;,
+    &quot;summary={&#x27;S2&#x27;: {&#x27;status&#x27;: &#x27;done&#x27;}}&quot;
+  ],
+  &quot;phase&quot;: &quot;orchestration&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;whatsapp&quot;,
+  &quot;seq&quot;: 308
+}</code></pre></details></td></tr>
+<tr><td>311</td><td>package</td><td>packaging_start</td><td>archive</td><td>success</td><td><span class='chip'>run_root=RUN_ROOT</span> <span class='chip'>archive=RUN_ROOT.zip</span> <span class='chip'>updated_hashes=0</span><details><summary>Raw event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;packaging_start&quot;,
+  &quot;artifacts&quot;: [
+    &quot;run_root=RUN_ROOT&quot;,
+    &quot;archive=RUN_ROOT.zip&quot;,
+    &quot;updated_hashes=0&quot;
+  ],
+  &quot;phase&quot;: &quot;package&quot;,
+  &quot;result&quot;: &quot;success&quot;,
+  &quot;selector&quot;: &quot;archive&quot;,
+  &quot;seq&quot;: 311
+}</code></pre></details></td></tr></tbody></table>
+  <h2>Attention Required</h2>
+  <table><thead><tr><th>Seq</th><th>Phase</th><th>Action</th><th>Selector</th><th>Result</th><th>Error</th></tr></thead><tbody><tr><td>36</td><td>local-first</td><td>recovery</td><td>bluetooth_target_row=HOST_PC</td><td>fail</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;recovery&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;fail&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_row=HOST_PC&quot;,
+  &quot;seq&quot;: 36
+}</code></pre></details></td></tr>
+<tr><td>44</td><td>local-first</td><td>bluetooth_connected_verify</td><td>bluetooth_target_row=HOST_PC</td><td>fail</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;bluetooth_connected_verify&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;fail&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_row=HOST_PC&quot;,
+  &quot;seq&quot;: 44
+}</code></pre></details></td></tr>
+<tr><td>53</td><td>local-first</td><td>recovery</td><td>bluetooth_target_row=HOST_PC</td><td>fail</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;recovery&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;fail&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_row=HOST_PC&quot;,
+  &quot;seq&quot;: 53
+}</code></pre></details></td></tr>
+<tr><td>265</td><td>local-first</td><td>attachment_validation_warning</td><td>SAMPLE_CHAT</td><td>warn</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;attachment_validation_warning&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;warn&quot;,
+  &quot;selector&quot;: &quot;SAMPLE_CHAT&quot;,
+  &quot;seq&quot;: 265
+}</code></pre></details></td></tr>
+<tr><td>266</td><td>local-first</td><td>attachment_validation_warning</td><td>SAMPLE_CHAT</td><td>warn</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;attachment_validation_warning&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;warn&quot;,
+  &quot;selector&quot;: &quot;SAMPLE_CHAT&quot;,
+  &quot;seq&quot;: 266
+}</code></pre></details></td></tr>
+<tr><td>267</td><td>local-first</td><td>attachment_validation_warning</td><td>SAMPLE_CHAT</td><td>warn</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;attachment_validation_warning&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;warn&quot;,
+  &quot;selector&quot;: &quot;SAMPLE_CHAT&quot;,
+  &quot;seq&quot;: 267
+}</code></pre></details></td></tr>
+<tr><td>268</td><td>local-first</td><td>whatsapp_export_attachment_missing</td><td>SAMPLE_CHAT</td><td>missing</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;whatsapp_export_attachment_missing&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;missing&quot;,
+  &quot;selector&quot;: &quot;SAMPLE_CHAT&quot;,
+  &quot;seq&quot;: 268
+}</code></pre></details></td></tr>
+<tr><td>269</td><td>local-first</td><td>validate_attachment_mentions</td><td>SAMPLE_CHAT</td><td>warn</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;validate_attachment_mentions&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;warn&quot;,
+  &quot;selector&quot;: &quot;SAMPLE_CHAT&quot;,
+  &quot;seq&quot;: 269
+}</code></pre></details></td></tr>
+<tr><td>271</td><td>local-first</td><td>whatsapp_export_analysis_summary</td><td>SAMPLE_CHAT</td><td>warn</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;whatsapp_export_analysis_summary&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;warn&quot;,
+  &quot;selector&quot;: &quot;SAMPLE_CHAT&quot;,
+  &quot;seq&quot;: 271
+}</code></pre></details></td></tr>
+<tr><td>291</td><td>cleanup</td><td>bluetooth_unpair_confirm</td><td>HOST_PC</td><td>timeout</td><td><details><summary>Raw failure JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;bluetooth_unpair_confirm&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;cleanup&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;HOST_PC&quot;,
+  &quot;seq&quot;: 291
+}</code></pre></details></td></tr></tbody></table>
+  <h2>Recovered Non-Success Outcomes</h2>
+  <table><thead><tr><th>Seq</th><th>Phase</th><th>Action</th><th>Selector</th><th>Result</th><th>Details</th></tr></thead><tbody><tr><td>34</td><td>local-first</td><td>screen_state</td><td>bluetooth_target_connected=HOST_PC</td><td>timeout</td><td><details><summary>Raw recovered event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_state&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_connected=HOST_PC&quot;,
+  &quot;seq&quot;: 34
+}</code></pre></details></td></tr>
+<tr><td>35</td><td>local-first</td><td>click</td><td>bluetooth_target_row=HOST_PC</td><td>unexpected_state</td><td><details><summary>Raw recovered event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;click&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;unexpected_state&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_row=HOST_PC&quot;,
+  &quot;seq&quot;: 35
+}</code></pre></details></td></tr>
+<tr><td>40</td><td>local-first</td><td>screen_state</td><td>bluetooth_target_connected=HOST_PC</td><td>timeout</td><td><details><summary>Raw recovered event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_state&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_connected=HOST_PC&quot;,
+  &quot;seq&quot;: 40
+}</code></pre></details></td></tr>
+<tr><td>41</td><td>local-first</td><td>click</td><td>bluetooth_target_row=HOST_PC</td><td>unexpected_state</td><td><details><summary>Raw recovered event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;click&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;unexpected_state&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_row=HOST_PC&quot;,
+  &quot;seq&quot;: 41
+}</code></pre></details></td></tr>
+<tr><td>51</td><td>local-first</td><td>screen_state</td><td>bluetooth_target_connected=HOST_PC</td><td>timeout</td><td><details><summary>Raw recovered event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_state&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_connected=HOST_PC&quot;,
+  &quot;seq&quot;: 51
+}</code></pre></details></td></tr>
+<tr><td>52</td><td>local-first</td><td>click</td><td>bluetooth_target_row=HOST_PC</td><td>unexpected_state</td><td><details><summary>Raw recovered event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;click&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;unexpected_state&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_row=HOST_PC&quot;,
+  &quot;seq&quot;: 52
+}</code></pre></details></td></tr>
+<tr><td>56</td><td>local-first</td><td>screen_state</td><td>bluetooth_target_connected=HOST_PC</td><td>timeout</td><td><details><summary>Raw recovered event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_state&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;bluetooth_target_connected=HOST_PC&quot;,
+  &quot;seq&quot;: 56
+}</code></pre></details></td></tr></tbody></table>
+  <h2>Benign Non-Success Outcomes</h2>
+  <table><thead><tr><th>Seq</th><th>Phase</th><th>Action</th><th>Selector</th><th>Result</th><th>Details</th></tr></thead><tbody><tr><td>24</td><td>local-first</td><td>screen_transition</td><td>android_bluetooth_settings_open</td><td>already_open</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_transition&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;already_open&quot;,
+  &quot;selector&quot;: &quot;android_bluetooth_settings_open&quot;,
+  &quot;seq&quot;: 24
+}</code></pre></details></td></tr>
+<tr><td>30</td><td>local-first</td><td>screen_transition</td><td>android_bluetooth_settings_open</td><td>already_open</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_transition&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;already_open&quot;,
+  &quot;selector&quot;: &quot;android_bluetooth_settings_open&quot;,
+  &quot;seq&quot;: 30
+}</code></pre></details></td></tr>
+<tr><td>45</td><td>local-first</td><td>bluetooth_pairing_dialog</td><td>HOST_PC</td><td>timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;bluetooth_pairing_dialog&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;HOST_PC&quot;,
+  &quot;seq&quot;: 45
+}</code></pre></details></td></tr>
+<tr><td>47</td><td>local-first</td><td>bluetooth_pairing_dialog</td><td>HOST_PC</td><td>timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;bluetooth_pairing_dialog&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;HOST_PC&quot;,
+  &quot;seq&quot;: 47
+}</code></pre></details></td></tr>
+<tr><td>54</td><td>local-first</td><td>bluetooth_pairing_dialog</td><td>HOST_PC</td><td>timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;bluetooth_pairing_dialog&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;HOST_PC&quot;,
+  &quot;seq&quot;: 54
+}</code></pre></details></td></tr>
+<tr><td>55</td><td>local-first</td><td>bluetooth_pairing_dialog</td><td>HOST_PC</td><td>timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;bluetooth_pairing_dialog&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;HOST_PC&quot;,
+  &quot;seq&quot;: 55
+}</code></pre></details></td></tr>
+<tr><td>57</td><td>local-first</td><td>bluetooth_pairing_dialog</td><td>HOST_PC</td><td>timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;bluetooth_pairing_dialog&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;HOST_PC&quot;,
+  &quot;seq&quot;: 57
+}</code></pre></details></td></tr>
+<tr><td>58</td><td>local-first</td><td>bluetooth_pairing_dialog</td><td>HOST_PC</td><td>timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;bluetooth_pairing_dialog&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;HOST_PC&quot;,
+  &quot;seq&quot;: 58
+}</code></pre></details></td></tr>
+<tr><td>76</td><td>local-first</td><td>list_state</td><td>whatsapp_chat_list_scroll_down</td><td>unchanged_timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;list_state&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;unchanged_timeout&quot;,
+  &quot;selector&quot;: &quot;whatsapp_chat_list_scroll_down&quot;,
+  &quot;seq&quot;: 76
+}</code></pre></details></td></tr>
+<tr><td>121</td><td>local-first</td><td>screen_settled</td><td>bluetooth_share_handoff</td><td>timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_settled&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;bluetooth_share_handoff&quot;,
+  &quot;seq&quot;: 121
+}</code></pre></details></td></tr>
+<tr><td>183</td><td>local-first</td><td>screen_settled</td><td>bluetooth_share_handoff</td><td>timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_settled&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;bluetooth_share_handoff&quot;,
+  &quot;seq&quot;: 183
+}</code></pre></details></td></tr>
+<tr><td>249</td><td>local-first</td><td>screen_settled</td><td>bluetooth_share_handoff</td><td>timeout</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_settled&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;local-first&quot;,
+  &quot;result&quot;: &quot;timeout&quot;,
+  &quot;selector&quot;: &quot;bluetooth_share_handoff&quot;,
+  &quot;seq&quot;: 249
+}</code></pre></details></td></tr>
+<tr><td>294</td><td>cleanup</td><td>screen_transition</td><td>android_bluetooth_settings_open</td><td>already_open</td><td><details><summary>Raw benign event JSON</summary><pre><code>{
+  &quot;action&quot;: &quot;screen_transition&quot;,
+  &quot;error&quot;: null,
+  &quot;phase&quot;: &quot;cleanup&quot;,
+  &quot;result&quot;: &quot;already_open&quot;,
+  &quot;selector&quot;: &quot;android_bluetooth_settings_open&quot;,
+  &quot;seq&quot;: 294
+}</code></pre></details></td></tr></tbody></table>
+</body>
+</html>

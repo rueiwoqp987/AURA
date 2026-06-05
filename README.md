@@ -28,7 +28,7 @@ AURA drives Android messenger apps through `uiautomator2`, captures UI-visible d
 
 | Start Here | Understand Outputs | Review Evidence | Scope |
 |---|---|---|---|
-| [Quick Start](#-quick-start) | [Output Bundle](#-output-bundle) | [Audit Review](#-audit-review) | [Validation Environment](#-validation-environment) |
+| [Quick Start](#-quick-start) | [Output Bundle](#-output-bundle) | [Sample Report](#-sample-audit-review-report) | [Validation Environment](#-validation-environment) |
 | [Configured Primitive Matrix](#-configured-primitive-matrix) | [Database Model](#-database-model) | [Reviewing A Run](#-reviewing-a-run) | [Current Limitations](#-current-limitations) |
 
 ## Snapshot
@@ -36,6 +36,19 @@ AURA drives Android messenger apps through `uiautomator2`, captures UI-visible d
 | &#x1F9FE; Audit First | &#x1F4F1; Multi-App | &#x1F517; Evidence Linked | &#x1F9ED; Review Ready |
 |---|---|---|---|
 | `AURA_audit.log` records lifecycle, UI, host, wait, failure, and recovery events. | Telegram, WhatsApp, and WeChat use profile-selected acquisition primitives. | Artifacts are linked to phase, account, chat, message, observation, action, and screen. | SQLite DB, JSON review, HTML timeline, ZIP bundle, and integrity manifest are generated per run. |
+
+## &#x1F9ED; Sample Audit Review Report
+
+AURA generates a reviewer-facing HTML report from the raw audit JSONL and normalized SQLite records. A static public example is available here:
+
+**[Open the anonymized sample audit review HTML](docs/examples/AURA_audit_timeline_sample.html)**
+
+How to read the coverage numbers:
+
+- **Attachments traced** shows whether content-bearing attachment artifacts are represented in the acquisition trace table.
+- **Attachment attempt coverage** shows whether attachment artifacts can be linked to an acquisition attempt, including success, missing, failed, or ambiguous outcomes.
+- **Artifacts traced** covers all registered artifacts, including attachments, exports, screenshots, UI trees, OCR sidecars, and support files.
+- **Advanced linkage diagnostics** separates direct audit-event linkage from acquisition-attempt linkage. Values below 100% can be expected because screenshots, UI trees, and other support artifacts often do not have acquisition-attempt records.
 
 ## &#x2726; Why AURA Exists
 
@@ -68,13 +81,10 @@ The acquisition primitives are general, complementary, and selected by profiles.
 
 | Capability | What it gives you |
 |---|---|
-| &#x1F9FE; Audit by design | Every key action is logged to `AURA_audit.log` as JSONL and imported into `aura.db`. |
-| &#x1F9ED; Human-readable review | `AURA_audit_review.json` and `AURA_audit_timeline.html` summarize failures, recovered events, benign events, and artifact groups. |
-| &#x1F5C4; Normalized storage | Contacts, chatrooms, observations, messages, artifacts, audit events, links, and acquisition attempts are separated. |
-| &#x1F517; Acquisition-context linkage | Artifacts are tied back to source actions, screens, phases, chats, messages, and observations. |
-| &#x1F317; Phase-aware collection | Acquisition can run under `local-first` and `controlled-online` policies. |
-| &#x1F6E1; Bounded UI automation | Important UI actions use screen predicates, safe clicks, stable-poll checks, and bounded recovery. |
-| &#x1F510; Integrity metadata | Collected files are hashed and packaged with a manifest. |
+| &#x1F9FE; Audit by design | Key UI, host, wait, failure, recovery, packaging, and post-acquisition events are logged to JSONL and imported into SQLite. |
+| &#x1F517; Acquisition-context linkage | Artifacts are tied back to source actions, screens, phases, chats, messages, observations, and acquisition attempts. |
+| &#x1F9ED; Review-ready outputs | AURA emits a raw audit log, normalized `aura.db`, review JSON, review HTML, ZIP bundle, and integrity manifest. |
+| &#x1F6E1; Bounded UI automation | Important UI actions use predicates, safe clicks, stable-poll checks, and bounded recovery instead of unbounded blind traversal. |
 | &#x1F9E9; Profile-selected primitives | Telegram, WhatsApp, and WeChat currently use different configured primitives while sharing one audit/storage model. |
 
 ## &#x1F3AC; Demo Videos
@@ -148,7 +158,7 @@ python main.py --target telegram --serial <ADB_SERIAL> --runs-dir runs --keep-ru
 
 ## &#x1F9EA; Procedure Model
 
-AURA is profile-driven. App acquisition profiles live under `profiles/apps/`, and manufacturer/system settings profiles live under `profiles/system_ui/`.
+AURA is profile-driven. App acquisition profiles live under `profiles/apps/`, while OEM/system settings profiles live under `profiles/system_ui/`.
 
 ```text
 profiles/
@@ -156,25 +166,20 @@ profiles/
   system_ui/     # Generic Android/Pixel, Samsung, and Huawei system UI profiles
 ```
 
+At runtime, AURA loads the target profile, resolves the system UI profile, initializes device policy, executes the configured primitive, registers artifacts, imports the audit JSONL into SQLite, builds review JSON/HTML, and packages the run.
+
 ```text
 AURA run
   -> load target profile
   -> resolve system UI profile
-  -> snapshot initial device/network state
-  -> initialize device state
+  -> enforce phase policy
   -> run orchestrator
-      -> resolve app adapter
-      -> resolve configured primitive engine
-      -> create collector
-      -> execute configured primitive
-          -> phase preflight
-          -> phase policy enforcement
-          -> app-specific acquisition
-  -> finalize artifact hashes
+      -> adapter -> configured primitive -> collector
+      -> app-specific acquisition
+      -> artifact/message/attempt storage
   -> import audit JSONL into aura.db
   -> build audit review JSON/HTML
-  -> create ZIP archive
-  -> write run summary JSON
+  -> create ZIP + summary report
 ```
 
 ### Phase Policies
@@ -226,74 +231,30 @@ AURA_YYYYMMDD_HHMMSS/
 
 ## &#x1F9ED; Audit Review
 
-AURA keeps the raw audit log and also builds review layers.
-
-### Raw Audit JSONL
-
-Each audit line is one JSON object:
-
-```json
-{
-  "ts": 1779880000.123,
-  "seq": 42,
-  "run_id": "AURA_YYYYMMDD_HHMMSS",
-  "phase": "local-first",
-  "account": "default",
-  "chat_id": "chat_123",
-  "source_class": "WhatsAppCollector",
-  "source_func": "_export_current_chat",
-  "app": "com.whatsapp",
-  "action": "export_chat_stage",
-  "selector": "<CHAT_DISPLAY_NAME>",
-  "result": "success",
-  "error": null,
-  "artifacts": ["share_sheet_ready"],
-  "side_effect_hint": null
-}
-```
-
-### Review HTML
-
-`AURA_audit_timeline.html` is designed for fast triage:
+AURA keeps the append-only JSONL audit log as the chronological record, then builds review layers from it:
 
 - **Phase Summary**: event count, failures, recovered non-success, benign non-success, and action chips.
+- **Artifact Trace Coverage**: highlights attachment trace coverage and attempt coverage, with lower-level linkage diagnostics folded under advanced details.
 - **Artifact Summary**: artifact groups by phase, artifact kind, source action, and source screen.
-- **Key Events**: run/method/package/artifact milestones.
-- **Attention Required**: unresolved non-success events.
-- **Recovered Non-Success**: events that failed temporarily but were later recovered.
-- **Benign Non-Success**: expected non-success states such as optional visual settle timeout.
-- **Raw JSON Details**: collapsible JSON payloads for deeper review.
+- **Artifact Acquisition Trace**: per-artifact context, source action, audit event, and acquisition attempt details.
+- **Attention Required / Recovered / Benign**: separates unresolved non-success, recovered transient failures, and expected non-critical waits.
+- **Raw JSON Details**: keeps exact audit payloads folded inside the HTML for sequence reconstruction.
+
+See the [anonymized sample report](docs/examples/AURA_audit_timeline_sample.html) for the intended review experience.
 
 ## &#x1F5C4; Database Model
 
-The database intentionally separates logical records from observations and artifacts.
+AURA stores normalized records in SQLite while keeping raw evidence files in the run package.
 
-Core tables:
-
-| Table | Purpose |
+| Area | Representative tables/views | Purpose |
 |---|---|
-| `runs` | Run-level metadata. |
-| `collection_contexts` | App + phase + account context. |
-| `contacts` | Contacts observed in a context. |
-| `chatrooms` | Logical chatroom entities. |
-| `chatroom_observations` | UI-observed chatroom rows. |
-| `messages` | Logical message records. |
-| `message_observations` | Page/row/bounds/raw-text observations for messages. |
-| `artifacts` | Screenshots, XML, OCR sidecars, exports, attachments, and downloaded files. |
-| `audit_events` | Normalized import of `AURA_audit.log`. |
-| `artifact_action_context_links` | Links artifacts to source actions and acquisition context. |
-| `derived_record_links` | Reserved link table for derived records. |
-| `acquisition_attempts` | Attempt-level attachment/export acquisition outcomes. |
+| Context | `runs`, `collection_contexts` | Run, app, phase, account, and policy context. |
+| Logical records | `contacts`, `chatrooms`, `messages` | Normalized entities extracted from UI-visible content. |
+| Observations | `chatroom_observations`, `message_observations` | UI/OCR observations that support logical records. |
+| Evidence | `artifacts`, `attachment_artifacts` | Screenshots, XML, OCR sidecars, exports, attachments, and downloaded files with hashes. |
+| Audit and linkage | `audit_events`, `artifact_action_context_links`, `acquisition_attempts` | Event sequence, acquisition-context linkage, and success/missing/failed/ambiguous attempts. |
 
-Convenience views:
-
-| View | Purpose |
-|---|---|
-| `messages_compact` | Readable joined message view. |
-| `attachment_artifacts` | Attachment-focused artifact view. |
-| `attachment_attempt_summary` | Attempt status, paths, hashes, and failure reasons. |
-| `message_attachment_summary` | Message-level attachment collection summary. |
-| `audit_review_events` | Ordered audit event view. |
+For table-level details, see [docs/IMPLEMENTATION_DETAILS.md](docs/IMPLEMENTATION_DETAILS.md).
 
 ## &#x1F4F1; App Strategies
 
