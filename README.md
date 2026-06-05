@@ -39,9 +39,11 @@ AURA drives Android messenger apps through `uiautomator2`, captures UI-visible d
 
 ## &#x1F9ED; Sample Audit Review Report
 
-AURA generates a reviewer-facing HTML report from the raw audit JSONL and normalized SQLite records. A static public example is available here:
+AURA generates a reviewer-facing HTML report from the raw audit JSONL and normalized SQLite records.
 
-**[Open the anonymized sample audit review HTML](docs/examples/AURA_audit_timeline_sample.html)**
+![AURA audit review sample](docs/assets/aura_review_report_sample.png)
+
+Interactive sample HTML is included at [`docs/examples/AURA_audit_timeline_sample.html`](docs/examples/AURA_audit_timeline_sample.html). GitHub shows repository HTML files as source; for rendered browsing, open it locally or publish `/docs` through GitHub Pages.
 
 How to read the coverage numbers:
 
