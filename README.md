@@ -249,7 +249,7 @@ See the [anonymized sample report](docs/examples/AURA_audit_timeline_sample.html
 AURA stores normalized records in SQLite while keeping raw evidence files in the run package.
 
 | Area | Representative tables/views | Purpose |
-|---|---|
+|---|---|---|
 | Context | `runs`, `collection_contexts` | Run, app, phase, account, and policy context. |
 | Logical records | `contacts`, `chatrooms`, `messages` | Normalized entities extracted from UI-visible content. |
 | Observations | `chatroom_observations`, `message_observations` | UI/OCR observations that support logical records. |
